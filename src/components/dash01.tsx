@@ -4,7 +4,7 @@ export default function Dash01() {
     return (
         <div className="flex flex-col w-full h-screen p-4">
             <div className="flex flex-row w-full mb-4">
-                <div className="w-2/3 h-96 bg-blue-500 mr-4">
+                <div className="w-2/3 h-full bg-blue-500 mr-4">
                     {/* Gráfico principal (maior) */}
                 </div>
                 <div className="flex flex-col w-1/3 space-y-4">
