@@ -9,7 +9,6 @@ export default function Dash01() {
                 </div>
                 <div className="flex flex-col w-1/3 space-y-4">
                     <div className="h-48 bg-red-500">
-                        {/* Gráfico 1 (coluna) */}
                     </div>
                     <div className="h-48 bg-red-500">
                         {/* Gráfico 2 (coluna) */}
