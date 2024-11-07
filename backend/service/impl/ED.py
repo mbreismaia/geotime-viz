@@ -1,4 +1,4 @@
-from quicksort import *
+from service.impl.quicksort import quicksort
 import numpy as np
 from depth.multivariate import *
 from backend.schemas.queryED import QueryED
