@@ -2,5 +2,8 @@
 backend/venv/
 frontend/venv/
 
-# Outros arquivos que você não deseja rastrear
+# Ignorar arquivos Python compilados
+*.pyc
+
+# Ignorar arquivos de log
 *.log
