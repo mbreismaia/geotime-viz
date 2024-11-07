@@ -1,0 +1,6 @@
+# Ignorar ambientes virtuais
+backend/venv/
+frontend/venv/
+
+# Outros arquivos que você não deseja rastrear
+*.log
