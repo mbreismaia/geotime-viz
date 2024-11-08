@@ -1,5 +1,6 @@
 # Importando as funções de profundidade
 from service.impl.quicksort import quicksort
+from service.impl.quicksort import cmp
 import numpy as np
 from schemas.queryED import QueryED
 from service.impl.depth_functions import L2_depth, mahalanobis_depth, halfspace_depth, spatial_depth

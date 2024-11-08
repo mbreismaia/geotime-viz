@@ -3,61 +3,62 @@ import { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
 import axios from 'axios';
 
-// Tipo para os dados que esperamos da API
 interface PlotData {
   x: number;
   y: number;
 }
 
+interface PlotParameters {
+  plot: string;
+  runED: boolean;
+  variables: string[];
+  hour_interval: number[];
+  date_interval: string[];
+  coloring_method: string;
+  depth_type: string;
+  dim_reduction_technique: string;
+  reference_point: string;
+  days_of_week: string[];
+}
+
 const PlotComponent = () => {
-  const [plotData, setPlotData] = useState<PlotData[]>([]);  // Estado para armazenar os dados do gráfico
+  const [plotData, setPlotData] = useState<PlotData[]>([]);
 
   useEffect(() => {
-    // Parâmetros que você vai enviar para a API
-   const parameters = {
-      plot: "scatter",
-      runED: true,
-      variables: ["values", "prices", "distances"],
-      hour_interval: [8, 17],  
-      date_interval: ["2023-01-01", "2023-12-31"],
-      coloring_method: "default", 
-      depth_type: "L2",
-      dim_reduction_technique: "UMAP",
-      reference_point: "origin",
-      days_of_week: ["Monday", "Tuesday"]
-    };
+    const plot_parameters: PlotParameters =  {plot: "line", runED: false, variables: ["values", "prices", "distances", "total_time"], 
+      hour_interval: [0, 23], date_interval: ["2012-01-01", "2012-01-31"], coloring_method: "Month", depth_type: "L2", 
+      dim_reduction_technique: "UMAP", reference_point: "Origin", 
+      days_of_week: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]};
 
-    // Função para buscar os dados da API
     const fetchPlotData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/scatter_plot", { params: parameters });
-        setPlotData(response.data);  // Armazena os dados no estado
+        const response = await axios.post("http://127.0.0.1:8000/api/line_plot", plot_parameters);
+        console.log("Resposta da requisicao: ", response);
+        setPlotData(response.data);
       } catch (error) {
         alert("Erro ao buscar dados");
         console.error("Erro ao buscar dados: ", error);
       }
     };
 
-    fetchPlotData();  // Chama a função para buscar os dados
+    fetchPlotData();
   }, []);
 
   if (plotData.length === 0) {
-    return <div>Carregando...</div>;  // Exibe "Carregando..." enquanto os dados não estão prontos
+    return <div>Carregando...</div>;
   }
 
-  // Configura os dados para o gráfico de dispersão
   const plotTrace = {
-    x: plotData.map((d) => d.x),  // Mapeia os valores de x
-    y: plotData.map((d) => d.y),  // Mapeia os valores de y
-    mode: 'markers',  // Tipo de gráfico (marcadores para gráfico de dispersão)
-    type: 'scatter',  // Tipo de gráfico
+    x: plotData.map((d) => d.x),
+    y: plotData.map((d) => d.y),
+    mode: 'markers',
+    type: 'scatter',
   };
 
-  // Retorna o gráfico Plotly
   return (
     <div>
       <Plot
-        data={[plotTrace]}  // Dados que serão passados para o gráfico
+        data={[plotTrace]}
         layout={{
           title: 'Gráfico de Dispersão',
           xaxis: { title: 'X' },

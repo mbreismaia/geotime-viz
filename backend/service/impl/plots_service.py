@@ -21,7 +21,8 @@ class PlotService:
     # Funcao para ser chamada no começo quando a aplicação é rodada pela primeira vez para ler os dados
     @staticmethod
     def read_data_initial():
-        curves = pd.read_csv('./backend/db/curvesWithLocationOrigin.csv')
+        print("Reading data")
+        curves = pd.read_csv('./db/curvesWithLocationOrigin.csv')
 
         N = 366
         P = 24
@@ -65,7 +66,7 @@ class PlotService:
 
         # salvar os dados no json
         print("Saving data to json")
-        with open('./backend/db/database.json', 'w') as file:
+        with open('./db/database.json', 'w') as file:
             curve_data = {
                 "data_read": "True",
                 "curves": [curve.to_dict() for curve in C]
@@ -75,23 +76,26 @@ class PlotService:
     @staticmethod
     def read_data(parameters: Parameters):
         # ler os dados do json
-        with open('./backend/db/database.json') as json_file:
+        with open('./db/database.json') as json_file:
             curve_data = json.load(json_file)
+
+        print("Consegui abrir o arquivo do db")
         
         if curve_data["data_read"] == "False":
             PlotService.read_data_initial()
         else:
             print("Data already read")
 
+        print("Going to filter the data based on date_interval and days_of_week")
 
         # filtrar os dados de acordo com os parametros date_interval e days_of_week
         C = []
-        with open('./backend/db/database.json') as json_file:
+        with open('./db/database.json') as json_file:
             curve_data = json.load(json_file)
             for curve in curve_data["curves"]:
                 date = datetime.strptime(curve["date"], "%Y-%m-%d")
                 if date >= datetime.strptime(parameters.date_interval[0], "%Y-%m-%d") and date <= datetime.strptime(parameters.date_interval[1], "%Y-%m-%d"):
-                    if date.weekday() in parameters.days_of_week:
+                    if date.strftime("%A") in parameters.days_of_week:
                         C.append(Curve.from_dict(curve))
         return C
 
@@ -108,29 +112,24 @@ class PlotService:
 
         C = PlotService.read_data(parameters)
 
+        print("Calculating ED")
         ED(C, query)
+        print("ED calculated")
 
         # TODO: falta salvar no database   
 
         return C
     
     @staticmethod
-    def transformToDataFrame(C):
-        data = []
+    def transformToJson(C):
+        print("Transforming to json")
+        data = {"data": []}
         cols = ['values', 'prices', 'distances', 'total_time', 'depth_g', 'extremal_depth', 'weekDay', 'id', 'date']
         for curve in C:
-            data.append((curve.data['values'],
-                        curve.data['prices'],
-                        curve.data['distances'],
-                        curve.data['total_time'],
-                        curve.depth_g,
-                        curve.extremal_depth, 
-                        curve.weekDay,
-                        curve.id,
-                        curve.date))
+            data['data'].append(curve.to_dict())
 
-        df = pd.DataFrame(data, columns=cols)
-        return df
+        print("Transformed to json")
+        return data
     
     @staticmethod
     def calculateScatter(data, parameters: Parameters):
@@ -159,13 +158,9 @@ class PlotService:
         else:
             C = PlotService.read_data(parameters)
         
-        data = PlotService.transformToDataFrame(C)
+        data = PlotService.transformToJson(C)
     
         if parameters.plot == "scatter":
             return PlotService.calculateScatter(parameters)
         else:
             return data
-
-if __name__ == "__main__":
-    PlotService.read_data()
-    # PlotService.computeED()

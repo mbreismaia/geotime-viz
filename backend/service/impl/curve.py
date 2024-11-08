@@ -25,7 +25,7 @@ class Curve:
     def to_dict(self):
         return {
             'variables': self.variables,
-            'values': {var: val.tolist() for var, val in self.values.items()},
+            'data': {var: val.tolist() for var, val in self.data.items()},
             'id': self.id,
             'zone': self.zone,
             'P': self.P,
@@ -35,7 +35,7 @@ class Curve:
     
     def from_dict(data):
         curve = Curve(data['P'], data['id'], data['zone'], data['variables'])
-        curve.data = {var: np.array(val) for var, val in data['values'].items()}
+        curve.data = {var: np.array(val) for var, val in data['data'].items()}
         curve.date = datetime.datetime.fromisoformat(data['date'])
         curve.weekDay = data['weekDay']
         return curve
