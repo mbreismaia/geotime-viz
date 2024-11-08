@@ -1,12 +1,18 @@
 "use client";
 
+import { testConnection } from "@/services/api";
 import Map from "./graphs/map";
 import ParallelCoordinatesChart from "./graphs/parallelCord";
 import TaxiRunsPlot from "./graphs/taxiRuns";
 import TSNEChart from "./graphs/tsneChart";
 import ViolinPlot from "./graphs/viollin";
+import { useEffect } from "react";
 
 export default function Dashboard() {
+     useEffect(() => {
+        testConnection(); 
+    }, []);
+
     return (
        <div className=" grid grid-cols-1 gap-4 w-full h-screen p-4">
             <div className="grid grid-cols-2 gap-x-2">
