@@ -1,7 +1,8 @@
+# Importando as funções de profundidade
 from service.impl.quicksort import quicksort
 import numpy as np
-from depth.multivariate import *
-from backend.schemas.queryED import QueryED
+from schemas.queryED import QueryED
+from service.impl.depth_functions import L2_depth, mahalanobis_depth, halfspace_depth, spatial_depth
 
 def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
     data = []
@@ -13,21 +14,22 @@ def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
 
     depths = []
     if depth_type == 'L2':
-        depths = L2(data, data)
+        depths = L2_depth(data, data)
     elif depth_type == 'Spatial':
-        depths = spatial(data, data)
+        depths = spatial_depth(data, data)
     elif depth_type == 'mahalanobis':
-        depths = mahalanobis(data, data)
+        # Você deve calcular a inversa da matriz de covariância antes de passar para a função
+        cov_inv = np.linalg.inv(np.cov(data.T))  # Transposta para alinhar as dimensões
+        depths = mahalanobis_depth(data, data, cov_inv)
     else:
-        depths = halfspace(data, data)
+        depths = halfspace_depth(data, data)
 
     for i in range(len(C)):
         C[i].depth_g[pos] = depths[i]
 
-    return 
+    return
 
 def ED(C, query: QueryED):
-
     N = len(C)                                       # amount of data
     P = len(C[0].P)                                  # resolution of data
 
@@ -82,4 +84,4 @@ def ED(C, query: QueryED):
 
     C = C[::-1]
 
-    return 
+    return

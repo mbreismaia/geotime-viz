@@ -3,11 +3,11 @@ from service.impl.ED import ED
 import numpy as np
 import pandas as pd
 from datetime import *
-from curve import Curve
+from service.impl.curve import Curve
 import umap.umap_ as umap
 from sklearn.manifold import TSNE
-from backend.schemas.queryED import QueryED
-from backend.schemas.parameters import Parameters
+from schemas.queryED import QueryED
+from schemas.parameters import Parameters
 
 class PlotService:
     @staticmethod

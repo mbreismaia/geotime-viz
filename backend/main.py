@@ -1,20 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.plots import router as plots_router 
+from api.test import router as test_router
 
 app = FastAPI()
 
 # Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["http://localhost:3000"],  # Permite que o front-end (Next.js) na porta 3000 acesse a API
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permite todos os métodos HTTP (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos os cabeçalhos
 )
 
-# Inclui o router de plots com o prefixo /api
+# Inclui as requisições da pasta /api/plots
 app.include_router(plots_router, prefix="/api")
+
+# Inclui as requisições da pasta /api/test com um prefixo diferente
+app.include_router(test_router, prefix="/test")
 
 @app.get("/")
 async def root():
