@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 
 class Parameters(BaseModel):
-    plot: str
-    runED: bool
-    variables: list[str]
+    plot: str = "line"
+    runED: bool = True
+    variables: list[str] = ["values", "prices", "distances", "total_time"]
     hour_interval: tuple[int, int]
     date_interval: tuple[str, str]
-    coloring_method: str
+    coloring_method: str = "Month"
     depth_type: str = "L2"
     dim_reduction_technique: str = "UMAP"
     reference_point: str = "origin"

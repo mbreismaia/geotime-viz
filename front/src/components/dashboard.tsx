@@ -3,10 +3,11 @@
 import { testConnection } from "@/services/api";
 import Map from "./graphs/map";
 import ParallelCoordinatesChart from "./graphs/parallelCord";
-import TaxiRunsPlot from "./graphs/taxiRuns";
+// import TaxiRunsPlot from "./graphs/taxiRuns";
 import TSNEChart from "./graphs/tsneChart";
 import ViolinPlot from "./graphs/viollin";
 import { useEffect } from "react";
+import USAStatesMap from "./graphs/mapa";
 
 export default function Dashboard() {
      useEffect(() => {
@@ -17,7 +18,7 @@ export default function Dashboard() {
        <div className=" grid grid-cols-1 gap-4 w-full h-screen p-4">
             <div className="grid grid-cols-2 gap-x-2">
                 <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
-                    <TaxiRunsPlot />
+                    <USAStatesMap />
                 </div>
                 <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
                     <ParallelCoordinatesChart />

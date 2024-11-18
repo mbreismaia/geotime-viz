@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Map, Settings, ChevronLeft, ChevronRight, LineChart, ChartGantt, ScatterChart, LayoutGrid, CandlestickChart } from 'lucide-react';
-import ConfigModal from './configModal';
+import ModalCf from './modalCF';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -44,7 +44,7 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      <ConfigModal isOpen={isModalOpen} onClose={closeModal} />
+      <ModalCf isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 };
