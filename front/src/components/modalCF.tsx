@@ -14,37 +14,12 @@ import {
 } from "@nextui-org/react";
 import axios from "axios";
 import { useState } from "react";
+import { coloring_method, dim_reduction_technique, reference_point, weekDay } from "./modal";
 
 interface ModalCfProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const weekDay = [
-  { key: "Monday", label: "Monday" },
-  { key: "Tuesday", label: "Tuesday" },
-  { key: "Wednesday", label: "Wednesday" },
-  { key: "Thursday", label: "Thursday" },
-  { key: "Friday", label: "Friday" },
-  { key: "Saturday", label: "Saturday" },
-  { key: "Sunday", label: "Sunday" },
-];
-
-const coloring_method = [
-  { key: "Month", label: "Month" },
-  { key: "Other", label: "Other" },
-];
-
-const dim_reduction_technique = [
-  { key: "PCA", label: "PCA" },
-  { key: "t-SNE", label: "t-SNE" },
-  { key: "UMAP", label: "UMAP" },
-];
-
-const reference_point = [
-  { key: "Origin", label: "Origin" },
-  { key: "Center", label: "Center" },
-];
 
 export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
   const [parameters, setParameters] = useState({
@@ -66,19 +41,19 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
 
  const handleSave = async () => {
   try {
-    
     console.log("Parâmetros enviados:", parameters);  
     
     const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
     
-    console.log("Resposta do backend:", response.data);
+    localStorage.setItem("plotData", JSON.stringify(response.data));
+
+    // console.log("Resposta do backend:", response.data);
     
     onClose();
   } catch (error) {
     console.error("Erro ao enviar os parâmetros:", error);
   }
 };
-
 
 
   return (
