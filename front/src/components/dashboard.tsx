@@ -24,7 +24,7 @@ export default function Dashboard() {
     } else {
       console.log("Nenhum dado encontrado no localStorage.");
     }
-  }, []); // Executa apenas uma vez, após o componente ser montado
+  }, []); 
 
   console.log("Estado do plotData no Dashboard:", plotData); // Verificando o valor do estado 'plotData'
 
