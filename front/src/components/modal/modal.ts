@@ -1,3 +1,16 @@
+export const defaultParameters = {
+  plot: "line",
+  runED: false,
+  variables: ["values", "prices", "distances", "total_time"], // Variáveis fixas
+  hour_interval: [0, 24] as [number, number],
+  date_interval: null as [string, string] | null,
+  coloring_method: "",
+  depth_type: "L2",
+  dim_reduction_technique: "",
+  reference_point: "",
+  days_of_week: [] as string[],
+};
+
 export const weekDay = [
   { key: "Monday", label: "Monday" },
   { key: "Tuesday", label: "Tuesday" },

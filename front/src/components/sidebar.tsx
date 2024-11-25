@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Map, Settings, ChevronLeft, ChevronRight, LineChart, ChartGantt, ScatterChart, LayoutGrid, CandlestickChart } from 'lucide-react';
-import ModalCf from './modalCF';
+import ModalCf from './modal/modalCF';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);

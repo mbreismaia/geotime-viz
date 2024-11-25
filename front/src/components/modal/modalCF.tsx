@@ -8,13 +8,14 @@ import {
   Button,
   Select,
   SelectItem,
-  DateValue,
   DateRangePicker,
   Slider,
+  CalendarDate,
 } from "@nextui-org/react";
 import axios from "axios";
-import { useState } from "react";
-import { coloring_method, dim_reduction_technique, reference_point, weekDay } from "./modal";
+import { useEffect, useState } from "react";
+import { defaultParameters, coloring_method, dim_reduction_technique, reference_point, weekDay } from "./modal";
+import { parseDate } from "@internationalized/date";
 
 interface ModalCfProps {
   isOpen: boolean;
@@ -22,39 +23,37 @@ interface ModalCfProps {
 }
 
 export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
-  const [parameters, setParameters] = useState({
-    plot: "line", 
-    runED: false,  
-    variables: ["values", "prices", "distances", "total_time"], // Variáveis fixas
-    hour_interval: [0, 24],
-    date_interval: null as [string, string] | null,
-    coloring_method: "",
-    depth_type: "L2", 
-    dim_reduction_technique: "",
-    reference_point: "",
-    days_of_week: [] as string[],
-  });
+  const [parameters, setParameters] = useState(defaultParameters);
+  const formatDate = (date: string): CalendarDate => parseDate(date);
 
-  const formatDate = (date: DateValue) => {
-    return new Date(date.toString()).toISOString().split("T")[0];
+  // Carregar parâmetros do localStorage ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      const savedParameters = localStorage.getItem("savedParameters");
+      if (savedParameters) {
+        setParameters(JSON.parse(savedParameters));
+      }
+    }
+  }, [isOpen]);
+
+  const handleSave = async () => {
+    try {
+      console.log("Parâmetros enviados:", parameters);
+
+      // Salva parâmetros no localStorage
+      localStorage.setItem("savedParameters", JSON.stringify(parameters));
+
+      const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
+
+      console.log("PLOT DATA AQUI:", response.data);
+
+      localStorage.setItem("plotData", JSON.stringify(response.data));
+
+      onClose();
+    } catch (error) {
+      console.error("Erro ao enviar os parâmetros:", error);
+    }
   };
-
- const handleSave = async () => {
-  try {
-    console.log("Parâmetros enviados:", parameters);  
-    
-    const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
-    
-    localStorage.setItem("plotData", JSON.stringify(response.data));
-
-    // console.log("Resposta do backend:", response.data);
-    
-    onClose();
-  } catch (error) {
-    console.error("Erro ao enviar os parâmetros:", error);
-  }
-};
-
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose} className="bg-slate-900">
@@ -64,11 +63,22 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
           <DateRangePicker
             label="Select a Date Range"
             className="w-full"
+            value={
+              parameters.date_interval
+                ? {
+                    start: formatDate(parameters.date_interval[0]),
+                    end: formatDate(parameters.date_interval[1]),
+                  }
+                : undefined
+            }
             onChange={(value) => {
               if (value && "start" in value && "end" in value) {
                 setParameters((prev) => ({
                   ...prev,
-                  date_interval: [formatDate(value.start), formatDate(value.end)],
+                  date_interval: [
+                    value.start.toString(),
+                    value.end.toString(),
+                  ],
                 }));
               }
             }}
@@ -95,10 +105,12 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
             minValue={0}
             maxValue={24}
             value={parameters.hour_interval}
-            onChange={(value) => setParameters((prev) => ({
-              ...prev,
-              hour_interval: value as [number, number], 
-            }))}
+            onChange={(value) =>
+              setParameters((prev) => ({
+                ...prev,
+                hour_interval: value as [number, number],
+              }))
+            }
             formatOptions={{ style: "unit", unit: "hour" }}
             className="max-w-md text-white"
           />
@@ -109,7 +121,7 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
             onChange={(e) =>
               setParameters((prev) => ({
                 ...prev,
-               coloring_method: e.target.value,
+                coloring_method: e.target.value,
               }))
             }
           >
