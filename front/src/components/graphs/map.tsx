@@ -1,42 +1,75 @@
-import React from 'react';
-import Plot from 'react-plotly.js';
+import React, { useEffect, useState } from "react";
+import Plot from "react-plotly.js";
 
-const Map = () => {
-  const data = [{
-    type: 'choroplethmap',
-    locations: ['NY', 'MA', 'VT'],
-    z: [-50, -10, -20],
-    geojson: 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json',
-    zmin: -50,
-    zmax: 0,
-    colorscale: 'Viridis',
-    colorbar: {
-      title: 'Value',
-    },
-  }];
+interface GeoJSON {
+  type: string;
+  features: any[];
+}
 
-  const layout = {
-    map: {
-      center: { lon: -74, lat: 43 },
-      zoom: 3.5,
-    },
-    width: 600,
-    height: 400,
-    geo: {
-      scope: 'usa',
-      showland: true,
-      landcolor: 'white',
-      subunitcolor: 'lightgrey',
-      countrycolor: 'lightgrey',
-    },
-  };
+interface TaxiZoneData {
+  LocationID: number;
+  zone: string;
+  [key: string]: any; // Permite campos adicionais
+}
+
+const Map: React.FC = () => {
+  const [geoData, setGeoData] = useState<GeoJSON | null>(null);
+  const [zoneData, setZoneData] = useState<TaxiZoneData[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/map");
+        console.log('RESPOSTA: ',response)
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+        }
+        const { geojson, data } = await response.json();
+        console.log('AQUI ELES:',geojson, data)
+        setGeoData(geojson);
+        setZoneData(data);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (error) {
+    return <div>Erro: {error}</div>;
+  }
+
+  if (!geoData || !zoneData) {
+    return <div>Carregando mapa...</div>;
+  }
 
   return (
     <Plot
-      data={data}
-      layout={layout}
+      data={[
+        {
+          type: "choroplethmapbox",
+          geojson: geoData,
+          locations: zoneData.map((d) => d.LocationID),
+          z: zoneData.map((d) => d.LocationID), // Substituir por uma métrica relevante
+          text: zoneData.map((d) => d.zone),
+          featureidkey: "properties.location_id",
+          colorscale: "Viridis",
+        },
+      ]}
+      layout={{
+        mapbox: {
+          style: "carto-positron",
+          center: { lon: -73.98445299999996, lat: 40.694995999999904 },
+          zoom: 9,
+        },
+        margin: { l: 0, r: 0, t: 0, b: 0 },
+      }}
+      style={{ width: "100%", height: "100vh" }}
     />
   );
 };
 
 export default Map;
+

@@ -1,23 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import LineChart from "./graphs/lineChart";
+import Map from "./graphs/map";
+import { LineChartProps } from "@/types/types";
 
-export interface LineChartProps {
-  plotData: {
-    variables: string[];
-    data: {
-      values: number[];
-      prices: number[];
-      distances: number[];
-      total_time: number[];
-    };
-    id: number;
-    zone: number;
-    P: number;
-    date: string;
-    weekDay: number;
-  }[] | null;
-}
 
 export default function Dashboard() {
   const [plotData, setPlotData] = useState<LineChartProps["plotData"]>(null); 
@@ -43,9 +29,9 @@ export default function Dashboard() {
     <div className="grid grid-cols-1 gap-4 w-full h-screen p-4">
       <div className="grid grid-cols-2 gap-x-2">
         <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
-          Mapa
+          <Map />
         </div>
-        <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
+        <div className="flex p-2 bg-white shadow-md rounded-lg h-full justify-center items-center">
           <LineChart plotData={plotData} />
         </div>
       </div>

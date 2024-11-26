@@ -1,49 +1,46 @@
-"use client";
+import { LineChartProps } from "@/types/types";
 import React, { useState } from "react";
 import Plot from "react-plotly.js";
-import { LineChartProps } from "../dashboard";
 
 const LineChart = ({ plotData }: LineChartProps) => {
-  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const [selectedVariable, setSelectedVariable] = useState<string>("distances");
 
   if (!plotData || plotData.length === 0) {
     console.log("Aguardando dados...");
     return <div>Loading...</div>;
   }
 
-  const traces = plotData
-    .filter(item => selectedDates.length === 0 || selectedDates.includes(item.date)) // Filtrar pelas datas selecionadas
-    .map(item => ({
-      x: Array.from({ length: item.data.distances.length }, (_, i) => `${i}:00`), // Criando as horas
-      y: item.data.distances, // Distâncias como Y
-      type: "scatter",
-      mode: "lines",
-      line: { shape: "spline" }, // Linhas suaves
-      name: item.date, // Nome baseado na data
-    }));
+  const variables = Object.keys(plotData[0].data);
 
-  // Função para lidar com seleção de datas
-  const handleDateSelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      event.target.selectedOptions,
-      option => option.value
-    );
-    setSelectedDates(selectedOptions);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Formata para ano-mês-dia
+  };
+
+  const traces = plotData.map(item => ({
+    x: Array.from({ length: item.data[selectedVariable as keyof typeof item.data].length }, (_, i) => `${i}:00`),
+    y: item.data[selectedVariable as keyof typeof item.data],
+    type: "scatter",
+    mode: "lines",
+    line: { shape: "spline" },
+    name: formatDate(item.date), // Formatar a data para ano-mês-dia
+  }));
+
+  const handleVariableSelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedVariable(event.target.value);
   };
 
   return (
-    <div className="flex">     
-      <div className="flex flex-col">
-        <label htmlFor="date-select">Selecione as Datas:</label>
+    <div className="relative w-full h-full">
+      <div className="absolute top-2 right-2 z-10 w-fit h-fit">
         <select
-          id="date-select"
-          multiple
-          onChange={handleDateSelection}
-          style={{ width: "100%", height: "100px", marginTop: "10px" }}
+          id="variable-select"
+          onChange={handleVariableSelection}
+          className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          {plotData.map(item => (
-            <option key={item.date} value={item.date}>
-              {item.date}
+          {variables.map(variable => (
+            <option key={variable} value={variable}>
+              {variable.charAt(0).toUpperCase() + variable.slice(1)} {/* Capitalize */}
             </option>
           ))}
         </select>
@@ -53,15 +50,16 @@ const LineChart = ({ plotData }: LineChartProps) => {
       <Plot
         data={traces}
         layout={{
-          title: "Distâncias ao Longo do Tempo",
-          xaxis: { title: "Horas" },
-          yaxis: { title: "Distâncias" },
+          xaxis: { title: "Hours" },
+          yaxis: { title: selectedVariable.charAt(0).toUpperCase() + selectedVariable.slice(1) },
           showlegend: true,
-          width: 400, // Largura em pixels
-          height: 300, // Altura em pixels
-          autosize: true, // Ajusta automaticamente, se necessário
+          width: 600,
+          height: 400,
+          autosize: true,
+          paper_bgcolor: "transparent", 
+          plot_bgcolor: "transparent", 
         }}
-        style={{ width: "100%", height: "100%" }} // Ajusta ao tamanho do contêiner
+        style={{ width: "100%", height: "100%" }}
       />
     </div>
   );
