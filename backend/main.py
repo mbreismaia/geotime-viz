@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.plots import router as plots_router 
-from api.test import router as test_router
+from api.map import router as map_router
 
 app = FastAPI()
 
@@ -17,8 +17,10 @@ app.add_middleware(
 # Inclui as requisições da pasta /api/plots
 app.include_router(plots_router, prefix="/api")
 
-# Inclui as requisições da pasta /api/test com um prefixo diferente
-app.include_router(test_router, prefix="/test")
+# Inclui as requisições do mapa
+app.include_router(map_router, prefix="/map")
+
+# app.include_router(test_router, prefix="/test")
 
 @app.get("/")
 async def root():
