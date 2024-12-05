@@ -32,7 +32,7 @@ const LineChart = ({ plotData }: LineChartProps) => {
 
   return (
     <div className="relative w-full h-full">
-      <div className="absolute top-2 right-2 z-10 w-fit h-fit">
+      <div className="absolute top-2 left-2 z-10 w-fit h-fit">
         <select
           id="variable-select"
           onChange={handleVariableSelection}
@@ -48,13 +48,18 @@ const LineChart = ({ plotData }: LineChartProps) => {
 
       {/* Gráfico */}
       <Plot
+        className="bg-white shadow-md"
         data={traces}
         layout={{
-          xaxis: { title: "Hours" },
+          xaxis: { 
+            title: "Hours", 
+            tickmode: "linear", 
+            dtick: 4  
+          },
           yaxis: { title: selectedVariable.charAt(0).toUpperCase() + selectedVariable.slice(1) },
           showlegend: true,
           width: 600,
-          height: 400,
+          height: 300,
           autosize: true,
           paper_bgcolor: "transparent", 
           plot_bgcolor: "transparent", 

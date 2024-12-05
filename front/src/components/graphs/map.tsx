@@ -47,6 +47,7 @@ const Map: React.FC = () => {
 
   return (
     <Plot
+      className="shadow-md rounded-lg"
       data={[
         {
           type: "choroplethmapbox",
@@ -65,8 +66,9 @@ const Map: React.FC = () => {
           zoom: 9,
         },
         margin: { l: 0, r: 0, t: 0, b: 0 },
+        width: 600,
+        height: 300
       }}
-      style={{ width: "100%", height: "100vh" }}
     />
   );
 };

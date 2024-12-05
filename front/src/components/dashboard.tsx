@@ -26,27 +26,27 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 w-full h-screen p-4">
-      <div className="grid grid-cols-2 gap-x-2">
-        <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
-          <Map />
+     <div className="flex flex-col w-full h-full bg-gray-100 ">
+        <div className="flex p-2 justify-evenly h-2/6">
+          <div className="w-1/2">
+            < Map />
+          </div>
+          <div className="w-1/2">
+            <LineChart plotData={plotData} />
+          </div>
         </div>
-        <div className="flex p-2 bg-white shadow-md rounded-lg h-full justify-center items-center">
-          <LineChart plotData={plotData} />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-3 gap-x-2">
-        <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
-          Grafico 3
+        <div className="flex justify-evenly">
+          <div className="bg-white shadow-md rounded">
+            Grafico 3
+          </div>
+           <div className="bg-white shadow-md rounded">
+            Grafico 4
+          </div>
+           <div className="bg-white shadow-md rounded">
+            Grafico 5
+          </div>
         </div>
-        <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
-          Grafico 4
-        </div>
-        <div className="flex p-2 bg-white shadow-md rounded-lg h-72 justify-center items-center">
-          Grafico 5
-        </div>
-      </div>
-    </div>
+     </div>
   );
 }
