@@ -21,6 +21,15 @@ class Curve:
         self.depth_g = P * [0.0]
         self.extremal_depth = float(0.0)
 
+        # for parallel plot
+        self.ED_parallel = {}
+        self.phi_parallel = {}
+        self.depth_g_parallel = {}
+
+        for var in self.variables:
+            self.ED_parallel[var] = float(0.0)
+            self.depth_g_parallel[var] = P * [0.0]
+            self.phi_parallel[var] = size_r * [0.0]
 
     def to_dict(self):
         return {
@@ -29,13 +38,17 @@ class Curve:
             'id': self.id,
             'zone': self.zone,
             'P': self.P,
-            'date': self.date.isoformat(), 
-            'weekDay': self.weekDay
+            'date': self.date.isoformat(),
+            'weekDay': self.weekDay,
+            'depth_g': self.depth_g,
+            'ED_parallel': self.ED_parallel
         }
     
     def from_dict(data):
         curve = Curve(data['P'], data['id'], data['zone'], data['variables'])
         curve.data = {var: np.array(val) for var, val in data['data'].items()}
         curve.date = datetime.datetime.fromisoformat(data['date'])
+        curve.depth_g = data['depth_g']
         curve.weekDay = data['weekDay']
+        curve.ED_parallel = data['ED_parallel']
         return curve

@@ -1,5 +1,5 @@
 import json
-from service.impl.ED import ED
+from service.impl.ED import ED, ED_parallel
 import numpy as np
 import pandas as pd
 from datetime import *
@@ -8,6 +8,7 @@ import umap.umap_ as umap
 from sklearn.manifold import TSNE
 from schemas.queryED import QueryED
 from schemas.parameters import Parameters
+import geojson
 
 class PlotService:
     @staticmethod
@@ -116,15 +117,16 @@ class PlotService:
         ED(C, query)
         print("ED calculated")
 
-        # TODO: falta salvar no database   
-
+        print("Calculating ED parallel")
+        ED_parallel(C, query)
+        print("ED parallel calculated")
+        
         return C
     
     @staticmethod
     def transformToJson(C):
         print("Transforming to json")
         data = {"data": []}
-        cols = ['values', 'prices', 'distances', 'total_time', 'depth_g', 'extremal_depth', 'weekDay', 'id', 'date']
         for curve in C:
             data['data'].append(curve.to_dict())
 
@@ -153,14 +155,42 @@ class PlotService:
     
     @staticmethod
     def get_plot_data(parameters: Parameters):
+        print("Getting plot data")
         if parameters.runED:
             C = PlotService.computeED(parameters)
         else:
             C = PlotService.read_data(parameters)
         
-        data = PlotService.transformToJson(C)
-    
-        if parameters.plot == "scatter":
-            return PlotService.calculateScatter(parameters)
+
+        if parameters.plot == "map":
+            with open("./db/NYC_Taxi_Zones.geojson") as f:
+                geo_data = geojson.load(f)
+
+            df_geo = pd.read_csv("./db/taxi_zones.csv")
+
+            zone_extremal_depths = {}
+            for curve in C:
+                zone = curve.zone
+                if zone not in zone_extremal_depths:
+                    zone_extremal_depths[zone] = []
+                zone_extremal_depths[zone].append(curve.extremal_depth)
+
+            median_extremal_depths = {}
+            for zone, depths in zone_extremal_depths.items():
+                median_extremal_depths[zone] = np.median(depths)
+
+            for feature in geo_data['features']:
+                zone = feature['properties']['zone']
+                feature['properties']['ED'] = median_extremal_depths.get(zone, -1)
+
+            return {
+                "geojson": geo_data,
+                "data": df_geo.to_dict(orient="records")  # Converter DataFrame para lista de dicionários
+            }   
         else:
-            return data
+            data = PlotService.transformToJson(C)
+        
+            if parameters.plot == "scatter":
+                return PlotService.calculateScatter(parameters)
+            else:
+                return data
