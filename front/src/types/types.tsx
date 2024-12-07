@@ -1,4 +1,4 @@
-export interface LineChartProps {
+export interface ChartProps {
   plotData: {
     variables: string[];
     data: {
@@ -12,5 +12,12 @@ export interface LineChartProps {
     P: number;
     date: string;
     weekDay: number;
+    depth_g: number[];
+    ED_parallel: {
+      values: number;
+      prices: number;
+      distances: number;
+      total_time: number;
+    };
   }[] | null;
 }

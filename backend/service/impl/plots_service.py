@@ -154,7 +154,7 @@ class PlotService:
         return df
     
     @staticmethod
-    def get_plot_data(parameters: Parameters):
+    def get_plot_data(plot_type: str,parameters: Parameters):
         print("Getting plot data")
         if parameters.runED:
             C = PlotService.computeED(parameters)
@@ -162,35 +162,10 @@ class PlotService:
             C = PlotService.read_data(parameters)
         
 
-        if parameters.plot == "map":
-            with open("./db/NYC_Taxi_Zones.geojson") as f:
-                geo_data = geojson.load(f)
 
-            df_geo = pd.read_csv("./db/taxi_zones.csv")
-
-            zone_extremal_depths = {}
-            for curve in C:
-                zone = curve.zone
-                if zone not in zone_extremal_depths:
-                    zone_extremal_depths[zone] = []
-                zone_extremal_depths[zone].append(curve.extremal_depth)
-
-            median_extremal_depths = {}
-            for zone, depths in zone_extremal_depths.items():
-                median_extremal_depths[zone] = np.median(depths)
-
-            for feature in geo_data['features']:
-                zone = feature['properties']['zone']
-                feature['properties']['ED'] = median_extremal_depths.get(zone, -1)
-
-            return {
-                "geojson": geo_data,
-                "data": df_geo.to_dict(orient="records")  # Converter DataFrame para lista de dicionários
-            }   
+        data = PlotService.transformToJson(C)
+    
+        if plot_type == "scatter":
+            return PlotService.calculateScatter(parameters)
         else:
-            data = PlotService.transformToJson(C)
-        
-            if parameters.plot == "scatter":
-                return PlotService.calculateScatter(parameters)
-            else:
-                return data
+            return data

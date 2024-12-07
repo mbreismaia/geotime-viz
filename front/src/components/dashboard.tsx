@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import LineChart from "./graphs/lineChart";
-import Map from "./graphs/map";
-import { LineChartProps } from "@/types/types";
+import { ChartProps } from "@/types/types";
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import("./graphs/map"), { ssr: false });
+const LineChart = dynamic(() => import("./graphs/lineChart"), { ssr: false });
+const ParallelCoordinatesChart = dynamic(() => import("./graphs/parallelCord"), { ssr: false });
 
 
 export default function Dashboard() {
-  const [plotData, setPlotData] = useState<LineChartProps["plotData"]>(null); 
+  const [plotData, setPlotData] = useState<ChartProps["plotData"]>(null); 
 
   useEffect(() => {
     // Tentando recuperar os dados do localStorage
@@ -29,7 +32,7 @@ export default function Dashboard() {
      <div className="flex flex-col w-full h-full bg-gray-100 ">
         <div className="flex p-2 justify-evenly h-2/6">
           <div className="w-1/2">
-            < Map />
+            < Map plotData={plotData} />
           </div>
           <div className="w-1/2">
             <LineChart plotData={plotData} />
@@ -38,7 +41,7 @@ export default function Dashboard() {
 
         <div className="flex justify-evenly">
           <div className="bg-white shadow-md rounded">
-            Grafico 3
+            <ParallelCoordinatesChart plotData={plotData}/>
           </div>
            <div className="bg-white shadow-md rounded">
             Grafico 4

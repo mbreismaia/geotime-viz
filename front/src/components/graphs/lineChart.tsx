@@ -1,8 +1,8 @@
-import { LineChartProps } from "@/types/types";
+import { ChartProps } from "@/types/types";
 import React, { useState } from "react";
 import Plot from "react-plotly.js";
 
-const LineChart = ({ plotData }: LineChartProps) => {
+const LineChart = ({ plotData }: ChartProps) => {
   const [selectedVariable, setSelectedVariable] = useState<string>("distances");
 
   if (!plotData || plotData.length === 0) {

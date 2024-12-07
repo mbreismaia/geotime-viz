@@ -1,3 +1,4 @@
+import { ChartProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 
@@ -12,7 +13,7 @@ interface TaxiZoneData {
   [key: string]: any; // Permite campos adicionais
 }
 
-const Map: React.FC = () => {
+const Map = ({ plotData }: ChartProps) => {
   const [geoData, setGeoData] = useState<GeoJSON | null>(null);
   const [zoneData, setZoneData] = useState<TaxiZoneData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -20,13 +21,20 @@ const Map: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/map");
-        console.log('RESPOSTA: ',response)
+        // Enviar os dados para o endpoint
+        const response = await fetch("http://localhost:8000/map", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(plotData),  // Enviar plotData no corpo da requisição
+        });
+
         if (!response.ok) {
-          throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+          throw new Error(`Erro ao enviar dados: ${response.statusText}`);
         }
+
         const { geojson, data } = await response.json();
-        console.log('AQUI ELES:',geojson, data)
         setGeoData(geojson);
         setZoneData(data);
       } catch (err) {
@@ -35,7 +43,7 @@ const Map: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [plotData]);  // Adicionar plotData como dependência
 
   if (error) {
     return <div>Erro: {error}</div>;
@@ -46,17 +54,18 @@ const Map: React.FC = () => {
   }
 
   return (
-    <Plot
+   <Plot
       className="shadow-md rounded-lg"
       data={[
         {
           type: "choroplethmapbox",
           geojson: geoData,
           locations: zoneData.map((d) => d.LocationID),
-          z: zoneData.map((d) => d.LocationID), // Substituir por uma métrica relevante
+          z: zoneData.map((d) => d.ED), // Usando a extremal depth
           text: zoneData.map((d) => d.zone),
           featureidkey: "properties.location_id",
-          colorscale: "Viridis",
+          colorscale: "Viridis", // Escolha uma escala apropriada
+          colorbar: { title: "Extremal Depth", thickness: 10 }, // Adiciona a legenda de cores
         },
       ]}
       layout={{
@@ -74,4 +83,3 @@ const Map: React.FC = () => {
 };
 
 export default Map;
-
