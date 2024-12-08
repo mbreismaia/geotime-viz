@@ -21,5 +21,20 @@ export interface ChartProps {
     };
     x: number;
     y: number;
+    phi: number[];
+    phi_parallel: {
+      values: number[];
+      prices: number[];
+      distances: number[];
+      total_time: number[];
+    };
+    depth_g_parallel: {
+      values: number[];
+      prices: number[];
+      distances: number[];
+      total_time: number[];
+    };
+
   }[] | null;
 }
+

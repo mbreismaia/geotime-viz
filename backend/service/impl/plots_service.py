@@ -142,11 +142,13 @@ class PlotService:
     @staticmethod
     def calculateScatter(C, parameters: Parameters):
         technique = parameters.dim_reduction_technique
+
+        print(f"Len(C) = {len(C)}")
          
         if technique == "UMAP":
-            model = umap.UMAP(n_components = 2, n_neighbors = 15, min_dist = 0.1, random_state=0)
+            model = umap.UMAP(n_components = 2, n_neighbors = min(len(C) - 2, 30), min_dist = 0.1, random_state=0)
         else:
-            model = TSNE(n_components = 2, perplexity = 15, learning_rate = 100, random_state = 0)
+            model = TSNE(n_components = 2, perplexity = min(len(C) - 2, 30), learning_rate = 100, random_state = 0)
         
         X = []
         for curve in C:

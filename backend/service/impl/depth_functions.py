@@ -1,21 +1,31 @@
 # depth_functions.py
 import numpy as np
 
+import numpy as np
+
 def L2_depth(x, data):
-    cov=np.cov(np.transpose(data))
+    # Calcula a matriz de covariância
+    cov = np.cov(np.transpose(data))
 
-    if np.sum(np.isnan(cov))==0:
-        sigma=np.linalg.inv(cov)
+    if np.sum(np.isnan(cov)) == 0:
+        det = np.linalg.det(cov)
+        
+        if det == 0 or det < 1e-8:  
+            epsilon = 1e-8 
+            cov += np.eye(cov.shape[0]) * epsilon
+        
+        sigma = np.linalg.inv(cov)
     else:
-        print("Covariance estimate not found, no affine-invariance-adjustment")
-        sigma=np.eye(len(data))
+        sigma = np.eye(data.shape[1])
 
-    depths=(-1)*np.ones(len(x))
+    # Calcula as profundidades
+    depths = (-1) * np.ones(len(x))
     for i in range(len(x)):
-        tmp1=(x[i]-data)
-        tmp2=np.matmul(tmp1,sigma)
-        tmp3=np.sum(tmp2 * tmp1,axis=1)
-        depths[i]=1/(1 + np.mean(np.sqrt(tmp3)))
+        tmp1 = (x[i] - data)
+        tmp2 = np.matmul(tmp1, sigma)
+        tmp3 = np.sum(tmp2 * tmp1, axis=1)
+        depths[i] = 1 / (1 + np.mean(np.sqrt(tmp3)))
+
     return depths
 
 def spatial_depth(x, data):
