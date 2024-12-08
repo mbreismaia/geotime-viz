@@ -18,37 +18,37 @@ def L2_depth(x, data):
         depths[i]=1/(1 + np.mean(np.sqrt(tmp3)))
     return depths
 
-def mahalanobis_depth(X, Y, cov_inv):
-    """Calcula a profundidade de Mahalanobis usando numpy."""
-    diff = X[:, np.newaxis] - Y
-    return np.sqrt(np.sum(np.dot(diff, cov_inv) * diff, axis=2))
+def spatial_depth(x, data):
+    depths_tab=[]
+    cov=np.cov(np.transpose(data))
 
-def halfspace_depth(X, Y):
-    """Calcula a profundidade de halfspace com numpy."""
-    depths = []
-    for i in range(len(X)):
-        point = X[i]
-        count = 0
-        for j in range(len(Y)):
-            if np.dot(Y[j] - point, point) >= 0:
-                count += 1
-        depths.append(count / len(Y))
-    return np.array(depths)
+    if np.sum(np.isnan(cov))==0:
+        w,v=np.linalg.eig(cov)
+        lambda1=np.linalg.inv(np.matmul(v,np.diag(np.sqrt(w))))
+    else:
+        lambda1=np.eye(data.shape[1])
 
-def spatial_depth(X, Y):
-    """Calcula a profundidade espacial usando numpy."""
-    depths = []
-    for i in range(len(X)):
-        point = X[i]
-        count = 0
-        for j in range(len(Y)):
-            if np.linalg.norm(Y[j] - point) < np.linalg.norm(Y[i] - point):
-                count += 1
-        depths.append(count / len(Y))
-    return np.array(depths)
-
-def compute_cov_inv(X):
-    """Calcula a inversa da matriz de covariância usando numpy."""
-    cov_matrix = np.cov(X, rowvar=False)
-    cov_inv = np.linalg.inv(cov_matrix)
-    return cov_inv
+    depths=np.repeat(-1,len(x),axis=0)
+    for i in range(len(x)):
+        interm=[]
+        tmp1_ter=np.transpose(x[i]-data)
+        tmp1=np.transpose(np.matmul(lambda1,tmp1_ter))
+        tmp1_bis=np.sum(tmp1,axis=1)
+        for elements in tmp1_bis:
+            if elements==0:
+                interm.append(False)
+            if elements!=0:
+                interm.append(True)
+        
+        interm=np.array(interm)
+        tmp1=tmp1[interm]
+        tmp2=1/np.sqrt(np.sum(np.power(tmp1,2),axis=1))
+        tmp3=np.zeros([len(tmp1),len(tmp1[0])])
+        tmp1=np.transpose(tmp1)
+        for jj in range(len(tmp1)):
+            tmp3[:,jj]=tmp2*(tmp1[:][jj])
+        tmp4=np.sum(tmp3,axis=0)/len(data)
+        tmp5=np.power((tmp4),2)
+        tmp6=np.sum(tmp5)
+        depths_tab.append(1-np.sqrt(tmp6))
+    return np.array(depths_tab)

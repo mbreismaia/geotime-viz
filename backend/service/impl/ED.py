@@ -3,7 +3,7 @@ from service.impl.quicksort import quicksort
 from service.impl.quicksort import cmp
 import numpy as np
 from schemas.queryED import QueryED
-from service.impl.depth_functions import L2_depth, mahalanobis_depth, halfspace_depth, spatial_depth
+from service.impl.depth_functions import L2_depth, spatial_depth
 
 def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
     data = []
@@ -14,14 +14,9 @@ def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
     depths = []
     if depth_type == 'L2':
         depths = L2_depth(data, data)
-    elif depth_type == 'Spatial':
-        depths = spatial_depth(data, data)
-    elif depth_type == 'mahalanobis':
-        cov_inv = np.linalg.inv(np.cov(data.T))
-        depths = mahalanobis_depth(data, data, cov_inv)
     else:
-        depths = halfspace_depth(data, data)
-    
+        depths = spatial_depth(data, data)
+
     for i in range(len(C)):
         C[i].depth_g[pos] = depths[i]
 
