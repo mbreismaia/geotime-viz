@@ -77,15 +77,12 @@ class PlotService:
     @staticmethod
     def read_data(parameters: Parameters):
         # ler os dados do json
+        PlotService.read_data_initial()
+
         with open('./db/database.json') as json_file:
             curve_data = json.load(json_file)
 
         print("Consegui abrir o arquivo do db")
-        
-        if curve_data["data_read"] == "False":
-            PlotService.read_data_initial()
-        else:
-            print("Data already read")
 
         print("Going to filter the data based on date_interval and days_of_week")
 
@@ -140,9 +137,9 @@ class PlotService:
         technique = parameters.dim_reduction_technique
          
         if technique == "UMAP":
-            model = umap.UMAP(n_components = 2, n_neighbors = 30, min_dist = 0.1, random_state=0)
+            model = umap.UMAP(n_components = 2, n_neighbors = 15, min_dist = 0.1, random_state=0)
         else:
-            model = TSNE(n_components = 2, perplexity = 30, learning_rate = 100, random_state = 0)
+            model = TSNE(n_components = 2, perplexity = 15, learning_rate = 100, random_state = 0)
         
         X = []
         for curve in C:
