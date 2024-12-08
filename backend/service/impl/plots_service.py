@@ -119,6 +119,13 @@ class PlotService:
         print("Calculating ED parallel")
         C = ED_parallel(C, query)
         print("ED parallel calculated")
+
+        with open('./db/database.json', 'w') as file:
+            curve_data = {
+                "data_read": "True",
+                "curves": [curve.to_dict() for curve in C]
+            }
+            json.dump(curve_data, file, indent=4)
         
         return C
     
@@ -127,7 +134,7 @@ class PlotService:
         print("Transforming to json")
         data = {"data": []}
         for curve in C:
-            data['data'].append(curve.to_dict_front())
+            data['data'].append(curve.to_dict())
 
         print("Transformed to json")
         return data
@@ -157,6 +164,7 @@ class PlotService:
     @staticmethod
     def get_plot_data(plot_type: str,parameters: Parameters):
         print("Getting plot data")
+
         if parameters.runED:
             C = PlotService.computeED(parameters)
         else:

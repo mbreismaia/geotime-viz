@@ -53,20 +53,20 @@ class Curve:
     def to_dict(self):
         return {
             'variables': self.variables,
-            'data': {var: val.tolist() for var, val in self.data.items()},
+            'data': {var: [float(val) for val in val.tolist()] for var, val in self.data.items()},
             'id': self.id,
             'zone': self.zone,
             'P': self.P,
             'date': self.date.isoformat(),
             'weekDay': self.weekDay,
-            'depth_g': self.depth_g,
-            'ED_parallel': self.ED_parallel,
-            'x': self.x,
-            'y': self.y,
-            'phi': self.phi,
-            'extremal_depth': self.extremal_depth,
-            'phi_parallel': self.phi_parallel,
-            'depth_g_parallel': self.depth_g_parallel,
+            'depth_g': [float(d) for d in self.depth_g],
+            'ED_parallel': {var: float(val) for var, val in self.ED_parallel.items()},
+            'x': float(self.x),
+            'y': float(self.y),
+            'phi': [float(p) for p in self.phi],
+            'extremal_depth': float(self.extremal_depth),
+            'phi_parallel': {var: [float(p) for p in val] for var, val in self.phi_parallel.items()},
+            'depth_g_parallel': {var: [float(d) for d in val] for var, val in self.depth_g_parallel.items()},
         }
     
     def from_dict(data):
