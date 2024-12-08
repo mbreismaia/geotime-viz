@@ -5,6 +5,8 @@ import numpy as np
 from schemas.queryED import QueryED
 from service.impl.depth_functions import L2_depth, spatial_depth
 
+# comentario aleatorio
+
 def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
     data = []
     for i in range(len(C)):
