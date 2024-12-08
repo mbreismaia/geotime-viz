@@ -19,5 +19,7 @@ export interface ChartProps {
       distances: number;
       total_time: number;
     };
+    x: number;
+    y: number;
   }[] | null;
 }

@@ -1,9 +1,22 @@
 # depth_functions.py
 import numpy as np
 
-def L2_depth(X, Y):
-    """Calcula a profundidade L2 (distância Euclidiana) usando apenas numpy."""
-    return np.linalg.norm(X[:, np.newaxis] - Y, axis=2)
+def L2_depth(x, data):
+    cov=np.cov(np.transpose(data))
+
+    if np.sum(np.isnan(cov))==0:
+        sigma=np.linalg.inv(cov)
+    else:
+        print("Covariance estimate not found, no affine-invariance-adjustment")
+        sigma=np.eye(len(data))
+
+    depths=(-1)*np.ones(len(x))
+    for i in range(len(x)):
+        tmp1=(x[i]-data)
+        tmp2=np.matmul(tmp1,sigma)
+        tmp3=np.sum(tmp2 * tmp1,axis=1)
+        depths[i]=1/(1 + np.mean(np.sqrt(tmp3)))
+    return depths
 
 def mahalanobis_depth(X, Y, cov_inv):
     """Calcula a profundidade de Mahalanobis usando numpy."""

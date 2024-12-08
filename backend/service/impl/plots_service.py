@@ -102,11 +102,13 @@ class PlotService:
 
     @staticmethod 
     def computeED(parameters: Parameters):
-        r = [0.1, 0.2, 0.3, 0.4, 0.5]
+        r = []
+        for i in range(100):
+            r.append((i + 1) / 100)
 
         query = QueryED(
             r = r,
-            depthType = parameters.depth_type,
+            depth_type = parameters.depth_type,
             variables = parameters.variables,
             hour_interval = parameters.hour_interval
         )
@@ -114,11 +116,11 @@ class PlotService:
         C = PlotService.read_data(parameters)
 
         print("Calculating ED")
-        ED(C, query)
+        C = ED(C, query)
         print("ED calculated")
 
         print("Calculating ED parallel")
-        ED_parallel(C, query)
+        C = ED_parallel(C, query)
         print("ED parallel calculated")
         
         return C
@@ -128,13 +130,13 @@ class PlotService:
         print("Transforming to json")
         data = {"data": []}
         for curve in C:
-            data['data'].append(curve.to_dict())
+            data['data'].append(curve.to_dict_front())
 
         print("Transformed to json")
         return data
     
     @staticmethod
-    def calculateScatter(data, parameters: Parameters):
+    def calculateScatter(C, parameters: Parameters):
         technique = parameters.dim_reduction_technique
          
         if technique == "UMAP":
@@ -143,15 +145,17 @@ class PlotService:
             model = TSNE(n_components = 2, perplexity = 30, learning_rate = 100, random_state = 0)
         
         X = []
-        for i in range(len(data)):
-            X.append(data.at[i, 'depth_g'])
+        for curve in C:
+            X.append(curve.depth_g)
 
         X = np.array(X)
         y = model.fit_transform(X)
 
-        df = pd.DataFrame({'x': y[:, 0], 'y':  y[:, 1], 'id': data['id'], 'weekDay': data['weekDay']})
+        for i, curve in enumerate(C):
+            curve.x = y[i, 0]
+            curve.y = y[i, 1]
 
-        return df
+        return C
     
     @staticmethod
     def get_plot_data(plot_type: str,parameters: Parameters):
@@ -160,12 +164,8 @@ class PlotService:
             C = PlotService.computeED(parameters)
         else:
             C = PlotService.read_data(parameters)
-        
 
-
+        C = PlotService.calculateScatter(C, parameters)
         data = PlotService.transformToJson(C)
-    
-        if plot_type == "scatter":
-            return PlotService.calculateScatter(parameters)
-        else:
-            return data
+
+        return data

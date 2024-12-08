@@ -8,11 +8,9 @@ from service.impl.depth_functions import L2_depth, mahalanobis_depth, halfspace_
 def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
     data = []
     for i in range(len(C)):
-        list = [C[i].data[variables[j]][pos] for j in range(variables)]
-        data.append(np.array(list))
+        data.append([C[i].data["prices"][pos], C[i].data["values"][pos], C[i].data["total_time"][pos], C[i].data["distances"][pos]])
 
     data = np.array(data)
-
     depths = []
     if depth_type == 'L2':
         depths = L2_depth(data, data)
@@ -23,28 +21,29 @@ def calculatePointwiseDepth(C, variables, pos, depth_type='L2'):
         depths = mahalanobis_depth(data, data, cov_inv)
     else:
         depths = halfspace_depth(data, data)
-
+    
     for i in range(len(C)):
         C[i].depth_g[pos] = depths[i]
 
-    return
+    return C
 
 def ED(C, query: QueryED):
     N = len(C)                                       # amount of data
-    P = len(C[0].P)                                  # resolution of data
+    P = C[0].P                                       # resolution of data
 
     r = query.r
     r_size = len(query.r)                            # Auxiliary vector used by extremal depth
     depth_type = query.depth_type                    # type of depth being used
-    variables = len(query.variables)                 # amount of variables being analyzed
+    variables = query.variables                       # variables being analyzed
+    len_variables = len(query.variables)                 # amount of variables being analyzed
     leftHour, rightHour = query.hour_interval        # interval of hours being analyzed
 
     print("N: ", N)
     print("P: ", P)
     print("variables: ", variables)
 
-    if variables == 1:
-        variable = query.variables[0]
+    if len_variables == 1:
+        variable = variables[0]
         print("is univariate")
         for g in range(N):
             for t in range(leftHour, rightHour + 1):
@@ -57,8 +56,8 @@ def ED(C, query: QueryED):
     else:
         print("is multivariate")
         for t in range(leftHour, rightHour + 1):
-            calculatePointwiseDepth(C, variables, t, depth_type)
- 
+            C = calculatePointwiseDepth(C, variables, t, depth_type)
+
     for g in range(N):
         for rr in range(r_size):
             cnt = 0
@@ -68,7 +67,9 @@ def ED(C, query: QueryED):
             C[g].phi[rr] = cnt / (rightHour - leftHour + 1)
 
     # order functions
+    print("Sorting")
     quicksort(C, 0, N - 1)
+    print("Sorted")
 
     for i in range(N):
         L = 0
@@ -84,16 +85,15 @@ def ED(C, query: QueryED):
 
     C = C[::-1]
 
-    return
+    return C
 
 def ED_parallel(C, query: QueryED):   
     N = len(C)                                       # amount of data
-    P = len(C[0].P)                                  # resolution of data
+    P = C[0].P                                       # resolution of data
 
     r = query.r
     r_size = len(query.r)                            # Auxiliary vector used by extremal depth
-    depth_type = query.depth_type                    # type of depth being used
-    variables = len(query.variables)                 # amount of variables being analyzed
+    variables = query.variables                      # variables being analyzed
     leftHour, rightHour = query.hour_interval        # interval of hours being analyzed
 
     for i in range(N):
@@ -129,7 +129,7 @@ def ED_parallel(C, query: QueryED):
 
     for i in range(N):
         for var in variables:
-            values[var].append((C[i].phi_parallel[var][0], C[i].id))
+            values[var].append((C[i].phi_parallel[var], C[i].id))
 
     for var in variables:
         values[var].sort()
@@ -143,4 +143,4 @@ def ED_parallel(C, query: QueryED):
                     C[j].ED_parallel[var] = i / N
                     break    
 
-    return 
+    return C

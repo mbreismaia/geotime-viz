@@ -13,7 +13,7 @@ class PlotResponse(BaseModel):
 async def get_plot(plot_type: str, parameters: Parameters):
     print('ENTROU NA FUNCAO DATA')
     print('Parâmetros recebidos:', parameters)
-    data = PlotService.get_plot_data(plot_type,parameters)
+    data = PlotService.get_plot_data(plot_type, parameters)
 
     if data is None:
         raise HTTPException(status_code=404, detail="Data not found")

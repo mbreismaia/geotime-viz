@@ -9,6 +9,10 @@ class Curve:
         for var in self.variables:
             self.data[var] = np.zeros(P)    
 
+        #information for scatter plot
+        self.x = float(0.0)
+        self.y = float(0.0)
+
         #curves info
         self.P = int(P)
         self.id = int(id)
@@ -31,6 +35,21 @@ class Curve:
             self.depth_g_parallel[var] = P * [0.0]
             self.phi_parallel[var] = size_r * [0.0]
 
+    def to_dict_front(self):
+        return {
+            'variables': self.variables,
+            'data': {var: [float(val) for val in val.tolist()] for var, val in self.data.items()},
+            'id': self.id,
+            'zone': self.zone,
+            'P': self.P,
+            'date': self.date.isoformat(),
+            'weekDay': self.weekDay,
+            'depth_g': [float(d) for d in self.depth_g],
+            'ED_parallel': {var: float(val) for var, val in self.ED_parallel.items()},
+            'x': float(self.x),
+            'y': float(self.y),
+        }
+
     def to_dict(self):
         return {
             'variables': self.variables,
@@ -41,7 +60,13 @@ class Curve:
             'date': self.date.isoformat(),
             'weekDay': self.weekDay,
             'depth_g': self.depth_g,
-            'ED_parallel': self.ED_parallel
+            'ED_parallel': self.ED_parallel,
+            'x': self.x,
+            'y': self.y,
+            'phi': self.phi,
+            'extremal_depth': self.extremal_depth,
+            'phi_parallel': self.phi_parallel,
+            'depth_g_parallel': self.depth_g_parallel,
         }
     
     def from_dict(data):
@@ -51,4 +76,11 @@ class Curve:
         curve.depth_g = data['depth_g']
         curve.weekDay = data['weekDay']
         curve.ED_parallel = data['ED_parallel']
+        curve.x = data['x']
+        curve.y = data['y']
+        curve.phi = data['phi']
+        curve.extremal_depth = data['extremal_depth']
+        curve.phi_parallel = data['phi_parallel']
+        curve.depth_g_parallel = data['depth_g_parallel']
+        
         return curve
