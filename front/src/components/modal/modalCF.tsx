@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { defaultParameters, coloring_method, dim_reduction_technique, reference_point, weekDay } from "./modal";
+import { defaultParameters, coloring_method, dim_reduction_technique, reference_point, weekDay, depth_type } from "./modal";
 import { parseDate } from "@internationalized/date";
 
 interface ModalCfProps {
@@ -58,7 +58,7 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose} className="bg-slate-900">
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1 text-white">Dashboard Settings</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1 text-white">Settings</ModalHeader>
         <ModalBody>
           <DateRangePicker
             label="Select a Date Range"
@@ -128,6 +128,23 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
             {coloring_method.map((color) => (
               <SelectItem key={color.key} value={color.key}>
                 {color.label}
+              </SelectItem>
+            ))}
+          </Select>
+           <Select
+            label="Select a Depth Method"
+            className="w-full"
+            value={parameters.depth_type}
+            onChange={(e) =>
+              setParameters((prev) => ({
+                ...prev,
+                depth_type: e.target.value,
+              }))
+            }
+          >
+            {depth_type.map((depth) => (
+              <SelectItem key={depth.key} value={depth.key}>
+                {depth.label}
               </SelectItem>
             ))}
           </Select>

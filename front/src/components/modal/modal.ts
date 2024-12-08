@@ -5,7 +5,7 @@ export const defaultParameters = {
   hour_interval: [0, 23] as [number, number],
   date_interval: null as [string, string] | null,
   coloring_method: "",
-  depth_type: "L2",
+  depth_type: "",
   dim_reduction_technique: "",
   reference_point: "",
   days_of_week: [] as string[],
@@ -20,6 +20,12 @@ export const weekDay = [
   { key: "Saturday", label: "Saturday" },
   { key: "Sunday", label: "Sunday" },
 ];
+
+export const depth_type = [
+  { key: "L2", label: "L2" },
+  { key: "Spatial", label: "Spatial" },
+];
+
 
 export const coloring_method = [
   { key: "Month", label: "Month" },
