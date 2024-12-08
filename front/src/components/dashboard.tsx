@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 const Map = dynamic(() => import("./graphs/map"), { ssr: false });
 const LineChart = dynamic(() => import("./graphs/lineChart"), { ssr: false });
 const ParallelCoordinatesChart = dynamic(() => import("./graphs/parallelCord"), { ssr: false });
+const ScatterChart = dynamic(() => import("./graphs/scatterChart"), { ssr: false });
 
 export default function Dashboard() {
   const [plotData, setPlotData] = useState(null);
@@ -41,7 +42,9 @@ export default function Dashboard() {
         <div className="bg-white shadow-md rounded">
           <ParallelCoordinatesChart plotData={plotData} />
         </div>
-        <div className="bg-white shadow-md rounded">Grafico 4</div>
+        <div className="bg-white shadow-md rounded">
+          <ScatterChart plotData={plotData}/>
+        </div>
         <div className="bg-white shadow-md rounded">Grafico 5</div>
       </div>
     </div>
