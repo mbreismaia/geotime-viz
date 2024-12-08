@@ -23,16 +23,15 @@ export const weekDay = [
 
 export const coloring_method = [
   { key: "Month", label: "Month" },
-  { key: "Other", label: "Other" },
+  { key: "Quarter", label: "Quarter" },
 ];
 
 export const dim_reduction_technique = [
-  { key: "PCA", label: "PCA" },
   { key: "t-SNE", label: "t-SNE" },
   { key: "UMAP", label: "UMAP" },
 ];
 
 export const reference_point = [
   { key: "Origin", label: "Origin" },
-  { key: "Center", label: "Center" },
+  { key: "Destination", label: "Destination" },
 ];
