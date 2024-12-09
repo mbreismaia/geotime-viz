@@ -28,24 +28,25 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-100 ">
-      <div className="flex p-2 justify-evenly h-2/6">
-        <div className="w-1/2">
+    <div className="flex flex-col w-full h-full bg-gray-100 p-4 gap-4">
+      {/* Primeira linha de gráficos */}
+      <div className="flex flex-wrap justify-between gap-4">
+        <div className="w-[48%] aspect-video bg-white shadow-md rounded">
           <Map plotData={plotData} />
         </div>
-        <div className="w-1/2">
+        <div className="w-[48%] aspect-video bg-white shadow-md rounded">
           <LineChart plotData={plotData} />
         </div>
       </div>
 
-      <div className="flex justify-evenly">
-        <div className="bg-white shadow-md rounded">
+      {/* Segunda linha de gráficos */}
+      <div className="flex flex-wrap justify-between gap-4">
+        <div className="w-[48%] aspect-video bg-white shadow-md rounded">
           <ParallelCoordinatesChart plotData={plotData} />
         </div>
-        <div className="bg-white shadow-md rounded">
-          <ScatterChart plotData={plotData}/>
+        <div className="w-[48%] aspect-video bg-white shadow-md rounded">
+          <ScatterChart plotData={plotData} />
         </div>
-        <div className="bg-white shadow-md rounded">Grafico 5</div>
       </div>
     </div>
   );

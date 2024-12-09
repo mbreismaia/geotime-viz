@@ -8,7 +8,6 @@ import umap.umap_ as umap
 from sklearn.manifold import TSNE
 from schemas.queryED import QueryED
 from schemas.parameters import Parameters
-import geojson
 
 class PlotService:
     @staticmethod
@@ -146,9 +145,9 @@ class PlotService:
         print(f"Len(C) = {len(C)}")
          
         if technique == "UMAP":
-            model = umap.UMAP(n_components = 2, n_neighbors = min(len(C) - 2, 30), min_dist = 0.1, random_state=0)
+            model = umap.UMAP(n_components = 2, n_neighbors = min(len(C) - 2, 30), min_dist = 0.1)
         else:
-            model = TSNE(n_components = 2, perplexity = min(len(C) - 2, 30), learning_rate = 100, random_state = 0)
+            model = TSNE(n_components = 2, perplexity = min(len(C) - 2, 30), learning_rate = 100)
         
         X = []
         for curve in C:

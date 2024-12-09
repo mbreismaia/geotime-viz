@@ -30,6 +30,7 @@ export const depth_type = [
 export const coloring_method = [
   { key: "Month", label: "Month" },
   { key: "Quarter", label: "Quarter" },
+  { key: "Weekday", label: "Weekday" }
 ];
 
 export const dim_reduction_technique = [

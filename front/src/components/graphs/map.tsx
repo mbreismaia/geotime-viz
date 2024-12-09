@@ -4,13 +4,20 @@ import Plot from "react-plotly.js";
 
 interface GeoJSON {
   type: string;
-  features: any[];
+  features: Array<{
+    properties: {
+      zone: string;
+      ED: number; // Median extremal depth
+      location_id?: number; // Optional: for feature ID reference
+    };
+    [key: string]: any; // Allow additional fields in features
+  }>;
 }
 
 interface TaxiZoneData {
-  LocationID: number;
+  LocationID: number; // Corresponds to `location_id` in GeoJSON
   zone: string;
-  [key: string]: any; // Permite campos adicionais
+  [key: string]: any; // Allow additional fields from CSV data
 }
 
 const Map = ({ plotData }: ChartProps) => {
@@ -21,17 +28,16 @@ const Map = ({ plotData }: ChartProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Enviar os dados para o endpoint
         const response = await fetch("http://localhost:8000/map", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(plotData),  // Enviar plotData no corpo da requisição
+          body: JSON.stringify(plotData), // Send plotData in request body
         });
 
         if (!response.ok) {
-          throw new Error(`Erro ao enviar dados: ${response.statusText}`);
+          throw new Error(`Error fetching data: ${response.statusText}`);
         }
 
         const { geojson, data } = await response.json();
@@ -43,40 +49,46 @@ const Map = ({ plotData }: ChartProps) => {
     };
 
     fetchData();
-  }, [plotData]);  // Adicionar plotData como dependência
+  }, [plotData]);
 
   if (error) {
-    return <div>Erro: {error}</div>;
+    return <div>Error: {error}</div>;
   }
 
   if (!geoData || !zoneData) {
-    return <div>Carregando mapa...</div>;
+    return <div>Loading map...</div>;
   }
 
   return (
-   <Plot
+    <Plot
       className="shadow-md rounded-lg"
       data={[
         {
           type: "choroplethmapbox",
           geojson: geoData,
-          locations: zoneData.map((d) => d.LocationID),
-          z: zoneData.map((d) => d.ED), // Usando a extremal depth
-          text: zoneData.map((d) => d.zone),
-          featureidkey: "properties.location_id",
-          colorscale: "Viridis", // Escolha uma escala apropriada
-          colorbar: { title: "Extremal Depth", thickness: 10 }, // Adiciona a legenda de cores
+          locations: geoData.features.map(
+            (feature) => feature.properties.location_id // Match with feature ID
+          ),
+          z: geoData.features.map((feature) => feature.properties.ED), // Median ED values
+          text: geoData.features.map((feature) => feature.properties.zone), // Zone names
+          featureidkey: "properties.location_id", // ID reference in GeoJSON
+          colorscale: "Viridis", // Color scale
+          colorbar: { title: "Extremal Depth", thickness: 15 }, // Color legend
         },
       ]}
       layout={{
         mapbox: {
           style: "carto-positron",
-          center: { lon: -73.98445299999996, lat: 40.694995999999904 },
+          center: { lon: -73.9845, lat: 40.695 }, // NYC center
           zoom: 9,
         },
+        autosize: true,
         margin: { l: 0, r: 0, t: 0, b: 0 },
-        width: 600,
-        height: 300
+        width: 800,
+        height: 600,
+      }}
+      config={{
+        responsive: true,
       }}
     />
   );

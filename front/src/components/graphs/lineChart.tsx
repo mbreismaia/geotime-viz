@@ -1,9 +1,20 @@
 import { ChartProps } from "@/types/types";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
+import { getColorScale } from "@/components/color_scale/colorScale";
 
 const LineChart = ({ plotData }: ChartProps) => {
   const [selectedVariable, setSelectedVariable] = useState<string>("distances");
+  const [coloringMethod, setColoringMethod] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Retrieve parameters from localStorage
+    const savedParameters = localStorage.getItem("savedParameters");
+    if (savedParameters) {
+      const parsedParameters = JSON.parse(savedParameters);
+      setColoringMethod(parsedParameters.coloring_method || null);
+    }
+  }, []);
 
   if (!plotData || plotData.length === 0) {
     console.log("Aguardando dados...");
@@ -17,14 +28,33 @@ const LineChart = ({ plotData }: ChartProps) => {
     return date.toISOString().split("T")[0]; // Formata para ano-mês-dia
   };
 
-  const traces = plotData.map(item => ({
-    x: Array.from({ length: item.data[selectedVariable as keyof typeof item.data].length }, (_, i) => `${i}:00`),
-    y: item.data[selectedVariable as keyof typeof item.data],
-    type: "scatter",
-    mode: "lines",
-    line: { shape: "spline" },
-    name: formatDate(item.date), // Formatar a data para ano-mês-dia
-  }));
+  // Get the color scale configuration
+  const colorScaleConfig = getColorScale(coloringMethod as keyof typeof getColorScale);
+
+  // Prepare the traces for the line chart
+  const traces = plotData.map(item => {
+    const date = new Date(item.date);
+    let color = "#000000"; // Default color
+
+    if (coloringMethod === "Month" && colorScaleConfig) {
+      color = colorScaleConfig.colors[date.getMonth()];
+    } else if (coloringMethod === "Weekday" && colorScaleConfig) {
+      color = colorScaleConfig.colors[date.getDay()];
+    }
+
+    return {
+      x: Array.from({ length: item.data[selectedVariable as keyof typeof item.data].length }, (_, i) => `${i}:00`),
+      y: item.data[selectedVariable as keyof typeof item.data],
+      type: "scatter",
+      mode: "lines",
+      line: {
+        shape: "spline",
+        color, // Set the line color
+        width: 2,
+      },
+      name: formatDate(item.date), // Format the date for display
+    };
+  });
 
   const handleVariableSelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedVariable(event.target.value);
@@ -32,6 +62,7 @@ const LineChart = ({ plotData }: ChartProps) => {
 
   return (
     <div className="relative w-full h-full">
+      {/* Variable Selection Dropdown */}
       <div className="absolute top-2 left-2 z-10 w-fit h-fit">
         <select
           id="variable-select"
@@ -46,23 +77,25 @@ const LineChart = ({ plotData }: ChartProps) => {
         </select>
       </div>
 
-      {/* Gráfico */}
+      {/* Line Chart */}
       <Plot
         className="bg-white shadow-md"
         data={traces}
         layout={{
-          xaxis: { 
-            title: "Hours", 
-            tickmode: "linear", 
-            dtick: 4  
+          xaxis: {
+            title: "Hours",
+            tickmode: "linear",
+            dtick: 4,
           },
-          yaxis: { title: selectedVariable.charAt(0).toUpperCase() + selectedVariable.slice(1) },
+          yaxis: {
+            title: selectedVariable.charAt(0).toUpperCase() + selectedVariable.slice(1),
+          },
           showlegend: true,
           width: 600,
           height: 300,
           autosize: true,
-          paper_bgcolor: "transparent", 
-          plot_bgcolor: "transparent", 
+          paper_bgcolor: "transparent",
+          plot_bgcolor: "transparent",
         }}
         style={{ width: "100%", height: "100%" }}
       />
