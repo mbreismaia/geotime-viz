@@ -21,6 +21,7 @@ export interface ChartProps {
     };
     x: number;
     y: number;
+    extremal_depth: number;
     phi: number[];
     phi_parallel: {
       values: number[];

@@ -1,6 +1,7 @@
 export const defaultParameters = {
   plot: "line",
   runED: true,
+  zones: [] as string[],
   variables: ["values", "prices", "distances", "total_time"], // Variáveis fixas
   hour_interval: [0, 23] as [number, number],
   date_interval: null as [string, string] | null,

@@ -7,23 +7,24 @@ interface GeoJSON {
   features: Array<{
     properties: {
       zone: string;
-      ED: number; // Median extremal depth
-      location_id?: number; // Optional: for feature ID reference
+      ED: number;
+      location_id?: number; 
     };
-    [key: string]: any; // Allow additional fields in features
+    [key: string]: any; 
   }>;
 }
 
 interface TaxiZoneData {
-  LocationID: number; // Corresponds to `location_id` in GeoJSON
+  LocationID: number; 
   zone: string;
-  [key: string]: any; // Allow additional fields from CSV data
+  [key: string]: any;
 }
 
 const Map = ({ plotData }: ChartProps) => {
   const [geoData, setGeoData] = useState<GeoJSON | null>(null);
   const [zoneData, setZoneData] = useState<TaxiZoneData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedZones, setSelectedZones] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +34,7 @@ const Map = ({ plotData }: ChartProps) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(plotData), // Send plotData in request body
+          body: JSON.stringify(plotData),
         });
 
         if (!response.ok) {
@@ -51,6 +52,13 @@ const Map = ({ plotData }: ChartProps) => {
     fetchData();
   }, [plotData]);
 
+  const handleSelection = (event: any) => {
+    const selectedZonas = event.points.map((point: any) => point.properties.location_id);
+    console.log("Zonas selecionadas:", selectedZonas);
+    localStorage.setItem("selectedZones", JSON.stringify(selectedZonas));
+    setSelectedZones(selectedZonas);
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -67,13 +75,13 @@ const Map = ({ plotData }: ChartProps) => {
           type: "choroplethmapbox",
           geojson: geoData,
           locations: geoData.features.map(
-            (feature) => feature.properties.location_id // Match with feature ID
+            (feature) => feature.properties.location_id 
           ),
-          z: geoData.features.map((feature) => feature.properties.ED), // Median ED values
-          text: geoData.features.map((feature) => feature.properties.zone), // Zone names
-          featureidkey: "properties.location_id", // ID reference in GeoJSON
-          colorscale: "Viridis", // Color scale
-          colorbar: { title: "Extremal Depth", thickness: 15 }, // Color legend
+          z: geoData.features.map((feature) => feature.properties.ED), 
+          text: geoData.features.map((feature) => feature.properties.zone),
+          featureidkey: "properties.location_id", 
+          colorscale: "Viridis", 
+          colorbar: { title: "Extremal Depth", thickness: 15 }, 
         },
       ]}
       layout={{
@@ -90,6 +98,7 @@ const Map = ({ plotData }: ChartProps) => {
       config={{
         responsive: true,
       }}
+      onSelected={handleSelection}  
     />
   );
 };

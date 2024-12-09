@@ -8,7 +8,7 @@ from typing import List, Dict
 router = APIRouter() 
 
 @router.post("")
-async def get_map_data(plot_data: List[Dict]):  # Recebe o plot_data enviado pelo POST
+async def get_map_data(plot_data: List[Dict]):  
     try:
         with open("./db/NYC_Taxi_Zones.geojson") as f:
             geo_data = geojson.load(f)
@@ -26,10 +26,7 @@ async def get_map_data(plot_data: List[Dict]):  # Recebe o plot_data enviado pel
             extremal_depth = plot_data[i]['extremal_depth']
             zone_extremal_depths[zone].append(extremal_depth)
 
-        print(zone_extremal_depths)
         median_extremal_depths = {zone: np.median(extremal_depths) for zone, extremal_depths in zone_extremal_depths.items()}
-        print(median_extremal_depths)
-
 
         for feature in geo_data['features']:
             zone = feature['properties']['zone']
@@ -37,7 +34,7 @@ async def get_map_data(plot_data: List[Dict]):  # Recebe o plot_data enviado pel
         
         return {
             "geojson": geo_data,
-            "data": df_geo.to_dict(orient="records")  # Converter DataFrame para lista de dicionários
+            "data": df_geo.to_dict(orient="records") 
         }
     
     except Exception as e:

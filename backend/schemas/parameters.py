@@ -3,6 +3,7 @@ from pydantic import BaseModel
 class Parameters(BaseModel):
     plot: str = "line"
     runED: bool = True
+    zones: list[str] = []
     variables: list[str] = ["values", "prices", "distances", "total_time"]
     hour_interval: tuple[int, int]
     date_interval: tuple[str, str]

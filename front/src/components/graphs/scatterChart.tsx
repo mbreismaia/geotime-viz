@@ -32,20 +32,24 @@ const ScatterChart = ({ plotData }: ChartProps) => {
     {
       x: plotData.map(item => item.x),
       y: plotData.map(item => item.y),
-      text: plotData.map(item => `ID: ${item.id}<br>Data: ${formatDate(item.date)}`),
+      text: plotData.map(item => {
+        const date = new Date(item.date);
+        const weekDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return `ID: ${item.id}<br>Date: ${formatDate(item.date)}<br>Weekday: ${weekDayNames[date.getDay()]}<br>ED: ${item.extremal_depth.toFixed(2)}`;
+      }),
       mode: "markers",
       marker: {
         size: 10,
         color: plotData.map(item => {
           const date = new Date(item.date);
           if (coloringMethod === "Month") {
-            return colorScaleConfig.colors[date.getMonth()]; // Mês como índice (0-11)
+            return colorScaleConfig.colors[date.getMonth()]; 
           } else if (coloringMethod === "Weekday") {
-            return colorScaleConfig.colors[date.getDay()]; // Dia da semana como índice (0-6)
+            return colorScaleConfig.colors[date.getDay()]; 
           }
-          return null; // Cor padrão para casos sem método
+          return null; 
         }),
-        colorscale: colorScaleConfig?.colors || "Viridis", // Configuração de cores
+        colorscale: colorScaleConfig?.colors || "Viridis", 
         showscale: true,
         colorbar: {
           title: coloringMethod || "Color Scale",
@@ -58,19 +62,27 @@ const ScatterChart = ({ plotData }: ChartProps) => {
   ];
 
   const layout = {
-    title: `Redução de dimensionalidade dos dados utilizando ${reductionTechnique || "Método não especificado"}`,
+    // title: `Redução de dimensionalidade dos dados utilizando ${reductionTechnique || "Método não especificado"}`,
     xaxis: {
       title: "X",
     },
     yaxis: {
       title: "Y",
     },
-    margin: { l: 50, r: 50, b: 50, t: 50 }, // Ajuste de margens para melhor visualização
+    margin: { l: 50, r: 50, b: 50, t: 50 }, 
+    autosize: true, 
+    paper_bgcolor: "transparent", 
+    plot_bgcolor: "transparent",
   };
 
   return (
-    <div>
-      <Plot data={data} layout={layout} />
+    <div className="relative w-full h-full">
+      <Plot
+        data={data}
+        layout={layout}
+        useResizeHandler={true} 
+        style={{ width: "100%", height: "100%" }} 
+      />
     </div>
   );
 };

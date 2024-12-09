@@ -4,7 +4,7 @@ import Plot from "react-plotly.js";
 import { getColorScale } from "@/components/color_scale/colorScale";
 
 const LineChart = ({ plotData }: ChartProps) => {
-  const [selectedVariable, setSelectedVariable] = useState<string>("distances");
+  const [selectedVariable, setSelectedVariable] = useState<string>("values");
   const [coloringMethod, setColoringMethod] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,19 +62,19 @@ const LineChart = ({ plotData }: ChartProps) => {
 
   return (
     <div className="relative w-full h-full">
-      {/* Variable Selection Dropdown */}
+      {}
       <div className="absolute top-2 left-2 z-10 w-fit h-fit">
-        <select
-          id="variable-select"
-          onChange={handleVariableSelection}
-          className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          {variables.map(variable => (
-            <option key={variable} value={variable}>
-              {variable.charAt(0).toUpperCase() + variable.slice(1)} {/* Capitalize */}
-            </option>
-          ))}
-        </select>
+      <select
+        id="variable-select"
+        onChange={handleVariableSelection}
+        className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm hover:border-indigo-500 focus:outline-none transition duration-200 ease-in-out px-4 py-2"
+      >
+        {variables.map(variable => (
+          <option key={variable} value={variable}>
+            {variable.charAt(0).toUpperCase() + variable.slice(1)} {}
+          </option>
+        ))}
+      </select>
       </div>
 
       {/* Line Chart */}
@@ -91,13 +91,12 @@ const LineChart = ({ plotData }: ChartProps) => {
             title: selectedVariable.charAt(0).toUpperCase() + selectedVariable.slice(1),
           },
           showlegend: true,
-          width: 600,
-          height: 300,
           autosize: true,
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
         }}
-        style={{ width: "100%", height: "100%" }}
+        useResizeHandler={true} // Enable resizing
+        style={{ width: "100%", height: "100%" }} // Make it responsive
       />
     </div>
   );

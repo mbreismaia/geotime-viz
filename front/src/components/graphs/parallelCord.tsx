@@ -15,8 +15,8 @@ const ParallelCoordinatesChart: React.FC<ChartProps> = ({ plotData }) => {
     {
       type: 'parcoords',
       line: {
-        color: ids, 
-        colorscale: 'Viridis', 
+        color: ids,
+        colorscale: 'Viridis',
       },
       dimensions: [
         ...variables.map(variable => ({
@@ -25,19 +25,27 @@ const ParallelCoordinatesChart: React.FC<ChartProps> = ({ plotData }) => {
         })),
         {
           label: 'ID',
-          values: ids, 
+          values: ids,
         },
       ],
     },
   ];
 
   const layout = {
-    title: 'Parallel Coordinates Chart',
+    autosize: true, 
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    margin: { l: 50, r: 50, b: 50, t: 50 }, 
   };
 
   return (
-    <div>
-      <Plot data={data} layout={layout} />
+    <div className="relative w-full h-full">
+      <Plot
+        data={data}
+        layout={layout}
+        useResizeHandler={true} 
+        style={{ width: '100%', height: '100%' }} 
+      />
     </div>
   );
 };

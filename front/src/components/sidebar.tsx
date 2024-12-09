@@ -3,23 +3,31 @@
 import { useState } from 'react';
 import { Map, Settings, ChevronLeft, ChevronRight, LineChart, ChartGantt, ScatterChart, LayoutGrid, CandlestickChart } from 'lucide-react';
 import ModalCf from './modal/modalCF';
+import Dashboard from './dashboard'; 
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [selectedChart, setSelectedChart] = useState<string>("dashboard"); // Estado para controlar qual gráfico será exibido
+  const [plotData, setPlotData] = useState(null); // Estado para armazenar os dados do gráfico
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const openModal = () => setIsModalOpen(true); 
   const closeModal = () => setIsModalOpen(false); 
 
   const menuItems = [
-    { href: "#panel", icon: <LayoutGrid size={24} />, label: "Dashboard" },
-    { href: "#map", icon: <Map size={24} />, label: "Map" },
-    { href: "#scatter", icon: <LineChart size={24} />, label: "Line Chart" },
-    { href: "#parallel", icon: <ChartGantt size={24} />, label: "Parallel Coordinates" },
-    { href: "#dots", icon: <ScatterChart size={24} />, label: "Scatter Chart" },
-    { href: "#viollin", icon: <CandlestickChart size={24} />, label: "Viollin Chart" },
+    { href: "#panel", icon: <LayoutGrid size={24} />, label: "Dashboard", chart: "dashboard" },
+    { href: "#map", icon: <Map size={24} />, label: "Map", chart: "map" },
+    { href: "#scatter", icon: <LineChart size={24} />, label: "Line Chart", chart: "lineChart" },
+    { href: "#parallel", icon: <ChartGantt size={24} />, label: "Parallel Coordinates", chart: "parallel" },
+    { href: "#dots", icon: <ScatterChart size={24} />, label: "Scatter Chart", chart: "scatter" },
+    { href: "#viollin", icon: <CandlestickChart size={24} />, label: "Viollin Chart", chart: "viollin" },
   ];
+
+  // Função para lidar com a mudança de seleção
+  const handleMenuItemClick = (chart: string) => {
+    setSelectedChart(chart);
+  };
 
   return (
     <>
@@ -31,8 +39,16 @@ const Sidebar = () => {
           </button>
         </div>
         <nav className="flex flex-col flex-grow">
-          {menuItems.map(({ href, icon, label }) => (
-            <a key={label} href={href} className="flex items-center p-4 hover:bg-gray-700">
+          {menuItems.map(({ href, icon, label, chart }) => (
+            <a
+              key={label}
+              href={href}
+              className="flex items-center p-4 hover:bg-gray-700"
+              onClick={(e) => {
+                e.preventDefault(); 
+                handleMenuItemClick(chart);
+              }}
+            >
               {icon}
               <span className={`ml-4 ${isOpen ? 'block' : 'hidden'}`}>{label}</span>
             </a>
@@ -44,7 +60,11 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      <ModalCf isOpen={isModalOpen} onClose={closeModal} />
+      {/* Passa plotData e setPlotData para o Modal */}
+      <ModalCf isOpen={isModalOpen} onClose={closeModal} setPlotData={setPlotData} />
+
+      {/* Passa selectedChart e plotData para o Dashboard */}
+      <Dashboard selectedChart={selectedChart} plotData={plotData} />
     </>
   );
 };
