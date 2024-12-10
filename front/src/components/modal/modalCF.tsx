@@ -16,6 +16,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { defaultParameters, coloring_method, dim_reduction_technique, reference_point, weekDay, depth_type } from "./modal";
 import { parseDate } from "@internationalized/date";
+import { toast } from "react-toastify";
 
 interface ModalCfProps {
   isOpen: boolean;
@@ -39,14 +40,12 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
   const handleSave = async () => {
     try {
       console.log("Parâmetros enviados:", parameters);
-
-      // Salva parâmetros no localStorage
       localStorage.setItem("savedParameters", JSON.stringify(parameters));
+      
+      toast.success("Data is being sent. Please wait... The page will reload automatically.");
 
       const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
-
-      console.log("PLOT DATA AQUI:", response.data);
-
+      
       localStorage.setItem("plotData", JSON.stringify(response.data));
 
       onClose();

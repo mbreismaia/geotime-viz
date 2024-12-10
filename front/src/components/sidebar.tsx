@@ -24,7 +24,7 @@ const Sidebar = ({ setSelectedChart }: SidebarProps) => {
     { chart: 'dashboard', icon: <LayoutGrid size={24} />, label: "Dashboard" },
     { chart: 'map', icon: <Map size={24} />, label: "Map" },
     { chart: 'line', icon: <LineChart size={24} />, label: "Line Chart" },
-    { chart: 'parallel', icon: <ChartGantt size={24} />, label: "Parallel Coordinates" },
+    { chart: 'parallel', icon: <ChartGantt size={24} />, label: "Parallel Chart" },
     { chart: 'scatter', icon: <ScatterChart size={24} />, label: "Scatter Chart" },
     { chart: 'violin', icon: <CandlestickChart size={24} />, label: "Violin Chart" },
   ];
