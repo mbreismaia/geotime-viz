@@ -47,8 +47,10 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
       const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
       
       localStorage.setItem("plotData", JSON.stringify(response.data));
-
+   
       onClose();
+      window.location.reload(); 
+
     } catch (error) {
       console.error("Erro ao enviar os parâmetros:", error);
     }
