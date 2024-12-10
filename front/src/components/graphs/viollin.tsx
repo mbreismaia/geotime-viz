@@ -2,6 +2,7 @@ import Plot from 'react-plotly.js';
 import { useEffect, useState } from "react";
 import { ChartProps } from "@/types/types";
 import { getColorScale } from "@/components/color_scale/colorScale";
+import { Button } from '@nextui-org/react';
 
 const ViolinPlot = ({ plotData }: ChartProps) => {
   const [coloringMethod, setColoringMethod] = useState<string | null>(null);
@@ -52,7 +53,7 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
     autosize: true,
     paper_bgcolor: 'transparent',
     plot_bgcolor: 'transparent',
-    margin: { l: 50, r: 50, b: 50, t: 50 },
+    margin: { l: 50, r: 50, b: 70, t: 30 },
     xaxis: {
       title: 'Date',
       type: 'category', // Define o eixo como categórico
@@ -75,25 +76,27 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
   };
 
   return (
-    <div className="relative w-full h-full">
-      <div className="flex justify-between items-center mb-4 mx-4 my-4"> {}
-        <button 
+    <div className="flex flex-col relative w-full h-full overflow-hidden">
+      <div className="flex justify-between items-center"> {}
+        <Button 
+          color="primary" 
+          size='sm'
           onClick={handlePreviousPage} 
           disabled={currentPage === 0} 
-          className="text-blue-500 border border-blue-500 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white disabled:border-gray-300 disabled:text-gray-300 disabled:hover:bg-transparent transition duration-200 ease-in-out"
         >
           &lt; Prev
-        </button>
+        </Button>
         <span className="text-gray-700">
             Violins ordered from smallest to biggest ED ({currentPage + 1}/{Math.ceil(sortedData.length / itemsPerPage)})
         </span>
-        <button 
+        <Button 
+          color="primary" 
+          size='sm'
           onClick={handleNextPage} 
           disabled={endIndex >= sortedData.length} 
-          className="text-blue-500 border border-blue-500 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white disabled:border-gray-300 disabled:text-gray-300 disabled:hover:bg-transparent transition duration-200 ease-in-out"
         >
           Next &gt;
-        </button>
+        </Button>
       </div>
       <Plot
         data={data}

@@ -35,7 +35,7 @@ const ParallelCoordinatesChart: React.FC<ChartProps> = ({ plotData }) => {
     autosize: true, 
     paper_bgcolor: 'transparent',
     plot_bgcolor: 'transparent',
-    margin: { l: 50, r: 50, b: 50, t: 50 }, 
+    margin: { l: 40, r: 40, b: 40, t: 50 }, 
   };
 
   return (

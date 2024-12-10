@@ -64,12 +64,13 @@ const Map = ({ plotData }: ChartProps) => {
   }
 
   if (!geoData || !zoneData) {
-    return <div>Loading map...</div>;
+    return <div className="flex w-full h-full items-center justify-center">
+      Please wait a moment while the map is loading...
+    </div>;
   }
 
   return (
     <Plot
-      className="shadow-md rounded-lg"
       data={[
         {
           type: "choroplethmapbox",
@@ -81,7 +82,7 @@ const Map = ({ plotData }: ChartProps) => {
           text: geoData.features.map((feature) => feature.properties.zone),
           featureidkey: "properties.location_id", 
           colorscale: "Viridis", 
-          colorbar: { title: "Extremal Depth", thickness: 15 }, 
+          colorbar: { title: "ED", thickness: 15 }, 
         },
       ]}
       layout={{
@@ -92,8 +93,8 @@ const Map = ({ plotData }: ChartProps) => {
         },
         autosize: true,
         margin: { l: 0, r: 0, t: 0, b: 0 },
-        width: 800,
-        height: 600,
+        width: "100%",
+        height: "100%",
       }}
       config={{
         responsive: true,
