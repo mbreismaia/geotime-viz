@@ -38,7 +38,7 @@ export default function Dashboard() {
   return (
      <div className="flex flex-col w-full h-full bg-gray-100 p-4 gap-y-4 overflow-hidden">
         <div className="flex w-full h-72 gap-x-4">
-          <div className="w-1/2 p-10 overflow-hidden shadow-md rounded bg-white">
+          <div className="w-1/2 overflow-hidden shadow-md rounded bg-white">
             < Map plotData={plotData} />
           </div>
           <div className="w-1/2 p-2 overflow-hidden shadow-md rounded bg-white">

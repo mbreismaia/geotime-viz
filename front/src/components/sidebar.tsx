@@ -5,7 +5,7 @@ import { Map, Settings, ChevronLeft, ChevronRight, LineChart, ChartGantt, Scatte
 import ModalCf from './modal/modalCF';
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); 
 
   const toggleSidebar = () => setIsOpen(!isOpen);

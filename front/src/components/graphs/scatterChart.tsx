@@ -76,7 +76,7 @@ const ScatterChart = ({ plotData }: ChartProps) => {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       <Plot
         data={data}
         layout={layout}

@@ -56,10 +56,10 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose} className="bg-slate-900">
-      <ModalContent>
+    <Modal isOpen={isOpen} onOpenChange={onClose} className="w-full h-4/5 bg-slate-900 ">
+      <ModalContent >
         <ModalHeader className="flex flex-col gap-1 text-white">Dashboard Settings</ModalHeader>
-        <ModalBody>
+        <ModalBody className="overflow-y-scroll">
           <DateRangePicker
             label="Select a Date Range"
             className="w-full"
@@ -103,7 +103,7 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
             label="Time Range"
             step={1}
             minValue={0}
-            maxValue={24}
+            maxValue={23}
             value={parameters.hour_interval}
             onChange={(value) =>
               setParameters((prev) => ({
