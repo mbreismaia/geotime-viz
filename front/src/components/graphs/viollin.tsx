@@ -24,11 +24,11 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
 
   const handleHover = (event: any) => {
     if (event?.points && event.points.length > 0) {
-      const id = event.points[0].data.customdata; 
-      // console.log("Hovered ID:", id);
-      onHover(id); 
+      const id = event.points[0].customdata; // Captura o ID
+      onHover(id); // Envia o ID para o componente pai
     }
   };
+
 
   if (!plotData || plotData.length === 0) {
     return <div>No data available</div>;

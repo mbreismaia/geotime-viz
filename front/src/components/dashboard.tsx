@@ -24,9 +24,8 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
     setSelectedPoints(points);
   };
 
-  const handleHover = (id: string) => {
-    // console.log("ID destacado:", id);
-    setHighlightedID(id);
+  const handleHover = (id: string | null) => {
+    setHighlightedID(id); 
   };
 
   useEffect(() => {

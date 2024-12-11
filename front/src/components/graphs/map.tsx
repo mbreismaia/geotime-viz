@@ -1,9 +1,7 @@
 import { ChartProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
-import { defaultParameters } from "../modal/modal";
 import axios from "axios";
-
 
 interface GeoJSON {
   type: string;
@@ -27,46 +25,69 @@ const Map = ({ plotData }: ChartProps) => {
   const [geoData, setGeoData] = useState<GeoJSON | null>(null);
   const [zoneData, setZoneData] = useState<TaxiZoneData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
 
   const savedParameters = localStorage.getItem("savedParameters");
-  const parameters = savedParameters ? JSON.parse(savedParameters) : {}; // Use um objeto vazio se não houver parâmetros
-  console.log("PEGOU ESSES PARAMETERS: ",parameters)
+  const parameters = savedParameters ? JSON.parse(savedParameters) : {};
 
   useEffect(() => {
     console.log("ENTROU NO EFFECT DO MAPA!")
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.post("http://127.0.0.1:8000/map", parameters);
         console.log("Resposta da requisição:", response.data);
         
-        setGeoData(response.data.geoData);
-        setZoneData(response.data.data);
-
+        // Adjust based on your actual API response structure
+        if (response.data.geoData && response.data.data) {
+          setGeoData(response.data.geoData);
+          setZoneData(response.data.data);
+          setError(null);
+        } else {
+          setError("Invalid data format received from server");
+        }
       } catch (error) {
         console.error("Erro ao enviar os parâmetros:", error);
+        setError("Failed to load map data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchData(); // Chama a função fetchData para executar a requisição.
-  }, [parameters]);
-
+    // Only fetch if parameters exist
+    if (Object.keys(parameters).length > 0) {
+      fetchData();
+    }
+  }, [parameters]); // Add dependency array
 
   const handleSelection = (event: any) => {
     const selectedZonas = event.points.map((point: any) => point.properties.location_id);
-    // console.log("Zonas selecionadas:", selectedZonas);
     localStorage.setItem("selectedZones", JSON.stringify(selectedZonas));
     setSelectedZones(selectedZonas);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4">Loading map data...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="text-red-500">Error: {error}</div>;
   }
 
   if (!geoData || !zoneData) {
-    return <div className="flex w-full h-full items-center justify-center">
-      Please wait a moment while the map is loading...
-    </div>;
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        No data available for the map.
+      </div>
+    );
   }
 
   return (
