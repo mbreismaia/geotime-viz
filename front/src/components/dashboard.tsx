@@ -91,7 +91,6 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
     }
   }, []); 
 
-  // Tela de Carregando os dados
   if (!plotData) {
     return <div className="w-full bg-gray-100 flex items-center justify-center">
       <div className="flex flex-col text-center items-center gap-y-4">
@@ -101,7 +100,6 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
     </div>;
   }
 
-  // Renderizar gráfico com base na seleção
   const renderChart = () => {
     switch (selectedChart) {
       case 'map':
