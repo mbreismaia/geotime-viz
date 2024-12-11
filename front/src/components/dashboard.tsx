@@ -12,6 +12,18 @@ const ScatterChart = dynamic(() => import("./graphs/scatterChart"), { ssr: false
 
 export default function Dashboard() {
   const [plotData, setPlotData] = useState<ChartProps["plotData"]>(null); 
+  const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
+  const [highlightedID, setHighlightedID] = useState<string | null>(null); 
+
+
+  const handlePointsSelected = (points: any[]) => {
+    setSelectedPoints(points);
+  };
+
+  const handleHover = (id: string) => {
+    console.log("ID destacado:", id);
+    setHighlightedID(id);
+  };
 
   useEffect(() => {
     const savedPlotData = localStorage.getItem("plotData");
@@ -37,24 +49,24 @@ export default function Dashboard() {
 
   return (
      <div className="flex flex-col w-full h-full bg-gray-100 p-4 gap-y-4 overflow-hidden">
-        <div className="flex w-full h-72 gap-x-4">
+        <div className="flex w-full h-108 gap-x-4">
           <div className="w-1/2 overflow-hidden shadow-md rounded bg-white">
             < Map plotData={plotData} />
           </div>
           <div className="w-1/2 p-2 overflow-hidden shadow-md rounded bg-white">
-            <ViolinPlot plotData={plotData}/>
+            <ViolinPlot plotData={plotData} selectedPoints={selectedPoints} onHover={handleHover} />
           </div>
         </div>
 
-        <div className="flex w-full h-72 gap-x-4">
+        <div className="flex w-full h-96 gap-x-4">
           <div className="w-2/6 bg-white shadow-md rounded">
-            <ParallelCoordinatesChart plotData={plotData}/>
+            <ParallelCoordinatesChart plotData={plotData} selectedPoints={selectedPoints}/>
           </div>
            <div className="w-2/6 bg-white shadow-md rounded">
-            <LineChart plotData={plotData} />
+            <LineChart plotData={plotData} highlightedID={highlightedID} />
           </div>
            <div className="w-2/6 bg-white shadow-md rounded">
-            <ScatterChart plotData={plotData} />
+            <ScatterChart plotData={plotData} onPointsSelected={handlePointsSelected}  />
           </div>
         </div>
      </div>
