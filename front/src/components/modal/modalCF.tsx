@@ -57,7 +57,7 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose} className="w-full h-4/5 bg-slate-900 ">
+    <Modal isOpen={isOpen} onOpenChange={onClose} className="w-full h-4/5 bg-gray-800 ">
       <ModalContent >
         <ModalHeader className="flex flex-col gap-1 text-white">Dashboard Settings</ModalHeader>
         <ModalBody className="overflow-y-scroll">
