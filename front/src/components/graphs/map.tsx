@@ -2,6 +2,7 @@ import { ChartProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import { defaultParameters } from "../modal/modal";
+import axios from "axios";
 
 
 interface GeoJSON {
@@ -27,37 +28,33 @@ const Map = ({ plotData }: ChartProps) => {
   const [zoneData, setZoneData] = useState<TaxiZoneData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
-  const [parameters, setParameters] = useState(defaultParameters);
+
+  const savedParameters = localStorage.getItem("savedParameters");
+  const parameters = savedParameters ? JSON.parse(savedParameters) : {}; // Use um objeto vazio se não houver parâmetros
+  console.log("PEGOU ESSES PARAMETERS: ",parameters)
 
   useEffect(() => {
+    console.log("ENTROU NO EFFECT DO MAPA!")
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/map", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(plotData),
-        });
+        const response = await axios.post("http://127.0.0.1:8000/map", parameters);
+        console.log("Resposta da requisição:", response.data);
+        
+        setGeoData(response.data.geoData);
+        setZoneData(response.data.data);
 
-        if (!response.ok) {
-          throw new Error(`Error fetching data: ${response.statusText}`);
-        }
-
-        const { geojson, data } = await response.json();
-        setGeoData(geojson);
-        setZoneData(data);
-      } catch (err) {
-        setError((err as Error).message);
+      } catch (error) {
+        console.error("Erro ao enviar os parâmetros:", error);
       }
     };
 
-    fetchData();
-  }, [plotData]);
+    fetchData(); // Chama a função fetchData para executar a requisição.
+  }, [parameters]);
+
 
   const handleSelection = (event: any) => {
     const selectedZonas = event.points.map((point: any) => point.properties.location_id);
-    console.log("Zonas selecionadas:", selectedZonas);
+    // console.log("Zonas selecionadas:", selectedZonas);
     localStorage.setItem("selectedZones", JSON.stringify(selectedZonas));
     setSelectedZones(selectedZonas);
   };

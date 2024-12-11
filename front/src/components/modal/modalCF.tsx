@@ -39,7 +39,7 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
 
   const handleSave = async () => {
     try {
-      console.log("Parâmetros enviados:", parameters);
+      // console.log("Parâmetros enviados:", parameters);
       localStorage.setItem("savedParameters", JSON.stringify(parameters));
       
       toast.success("Data is being sent. Please wait... The page will reload automatically.");

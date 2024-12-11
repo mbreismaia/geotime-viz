@@ -41,9 +41,9 @@ const ScatterChart = ({ plotData, onPointsSelected }: ScatterChartProps) => {
       }));
       setSelectedPoints(newSelectedPoints);
       onPointsSelected(newSelectedPoints); 
-      console.log("Selected points:", newSelectedPoints);
+      // console.log("Selected points:", newSelectedPoints);
     } else {
-      console.log("Selection cleared, maintaining previous points:", selectedPoints);
+      // console.log("Selection cleared, maintaining previous points:", selectedPoints);
     }
   };
 

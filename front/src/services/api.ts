@@ -9,10 +9,10 @@ const api = axios.create({
 export const testConnection = async () => {
   try {
     const response = await api.get("/test/test-connection");  // URL completa
-    console.log("Conexão realizada com sucesso!");
+    // console.log("Conexão realizada com sucesso!");
     return response.data;
   } catch (error) {
-    console.log("API não conectada!");
+    // console.log("API não conectada!");
     return null;
   }
 };

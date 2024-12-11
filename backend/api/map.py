@@ -11,18 +11,13 @@ from schemas.parameters import Parameters
 router = APIRouter() 
 
 @router.post("")
-async def get_map_data(plot_data: List[Dict]): 
-    hour_interval = (0, 23)
-    date_interval = ("2012-01-01", "2012-12-31")
-    param = Parameters(hour_interval=hour_interval, date_interval=date_interval)
-
-    PlotService.get_plot_data_zone(param)
-    
+async def get_map_data(parameters: Parameters): 
     try:
         with open("./db/NYC_Taxi_Zones.geojson") as f:
             geo_data = geojson.load(f)
         
         df_geo = pd.read_csv("./db/taxi_zones.csv")
+        PlotService.get_plot_data_zone(parameters)
 
         zone_ed = {}
         zone_ed_set = set()

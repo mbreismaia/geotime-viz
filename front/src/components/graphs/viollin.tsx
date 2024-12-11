@@ -25,7 +25,7 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
   const handleHover = (event: any) => {
     if (event?.points && event.points.length > 0) {
       const id = event.points[0].data.customdata; 
-      console.log("Hovered ID:", id);
+      // console.log("Hovered ID:", id);
       onHover(id); 
     }
   };

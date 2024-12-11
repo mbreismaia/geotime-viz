@@ -33,12 +33,12 @@ const LineChart = ({ plotData, highlightedID }: LineChartProps) => {
   const colorScaleConfig = getColorScale(coloringMethod as keyof typeof getColorScale);
 
   const opacities = plotData.map(item => {
-    console.log("highlightedID", highlightedID, "item.id", item.id.toString());
+    // // console.log("highlightedID", highlightedID, "item.id", item.id.toString());
     const isHighlighted = highlightedID?.toString() === item.id.toString();
     return isHighlighted ? 1 : 0.3;
   });
 
-  console.log("opacity line chart", opacities);
+  // // console.log("opacity line chart", opacities);
 
   const traces = plotData.map((item, index) => {
     const date = new Date(item.date);

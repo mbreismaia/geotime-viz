@@ -44,7 +44,7 @@ const ParallelCoordinatesChart = ({ plotData, selectedPoints }: ParallelPlotProp
     return isSelected || selectedPoints.length === 0 ? true : false;
   });
 
-  console.log('visibility parallel: ', visibility);
+  // console.log('visibility parallel: ', visibility);
 
   const data = [
     {

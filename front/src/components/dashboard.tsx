@@ -25,7 +25,7 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
   };
 
   const handleHover = (id: string) => {
-    console.log("ID destacado:", id);
+    // console.log("ID destacado:", id);
     setHighlightedID(id);
   };
 
@@ -34,10 +34,10 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
 
     if (savedPlotData) {
       const parsedData = JSON.parse(savedPlotData);
-      console.log("Dados parseados do localStorage:", parsedData);
+      // console.log("Dados parseados do localStorage:", parsedData);
       setPlotData(parsedData.data); 
     } else {
-      console.log("Nenhum dado encontrado no localStorage.");
+      // console.log("Nenhum dado encontrado no localStorage.");
     }
   }, []); 
 
