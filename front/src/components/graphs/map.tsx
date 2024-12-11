@@ -1,6 +1,8 @@
 import { ChartProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
+import { defaultParameters } from "../modal/modal";
+
 
 interface GeoJSON {
   type: string;
@@ -25,6 +27,7 @@ const Map = ({ plotData }: ChartProps) => {
   const [zoneData, setZoneData] = useState<TaxiZoneData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
+  const [parameters, setParameters] = useState(defaultParameters);
 
   useEffect(() => {
     const fetchData = async () => {

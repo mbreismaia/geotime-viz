@@ -4,10 +4,15 @@ import { ChartProps } from "@/types/types";
 import { getColorScale } from "@/components/color_scale/colorScale";
 import { Button } from '@nextui-org/react';
 
-const ViolinPlot = ({ plotData }: ChartProps) => {
+interface ViolinPlotProps extends ChartProps {
+  selectedPoints: any[];
+  onHover: (id: string) => void;  
+}
+
+const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
   const [coloringMethod, setColoringMethod] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(0); // Estado para gerenciar a página atual
-  const itemsPerPage = 10; // Número de violinos exibidos por vez
+  const [currentPage, setCurrentPage] = useState<number>(0); 
+  const itemsPerPage = 10; 
 
   useEffect(() => {
     const savedParameters = localStorage.getItem("savedParameters");
@@ -16,6 +21,14 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
       setColoringMethod(parsedParameters.coloring_method || null);
     }
   }, []);
+
+  const handleHover = (event: any) => {
+    if (event?.points && event.points.length > 0) {
+      const id = event.points[0].data.customdata; 
+      console.log("Hovered ID:", id);
+      onHover(id); 
+    }
+  };
 
   if (!plotData || plotData.length === 0) {
     return <div>No data available</div>;
@@ -32,6 +45,10 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
   const data = paginatedData.map((item) => {
     const date = new Date(item.date);
     let color = null;
+
+    const isSelected = selectedPoints.some((point) => point.id === item.id);
+    const opacity = isSelected || selectedPoints.length === 0 ? 1 : 0.3;
+    
     if (coloringMethod === "Month") {
       color = colorScaleConfig.colors[date.getMonth()];
     } else if (coloringMethod === "Weekday") {
@@ -43,9 +60,11 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
       name: date.toISOString().split('T')[0],
       hoverinfo: 'y+name+text',
       text: `ED: ${item.extremal_depth}`,
+      customdata: item.id,  
       box: { visible: true },
       meanline: { visible: true },
       line: { color },
+      opacity,
     };
   });
 
@@ -56,7 +75,7 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
     margin: { l: 50, r: 50, b: 70, t: 30 },
     xaxis: {
       title: 'Date',
-      type: 'category', // Define o eixo como categórico
+      type: 'category',
     },
     yaxis: {
       title: 'Depth_g',
@@ -77,32 +96,32 @@ const ViolinPlot = ({ plotData }: ChartProps) => {
 
   return (
     <div className="flex flex-col relative w-full h-full overflow-hidden">
-      <div className="flex justify-between items-center"> {}
-        <Button 
-          color="primary" 
-          size='sm'
-          onClick={handlePreviousPage} 
-          disabled={currentPage === 0} 
+      <div className="flex justify-between items-center">
+        <button
+          className={`px-4 py-2 border border-gray-300 text-gray-700 rounded hover:text-white hover:bg-blue-500 transition`}
+          onClick={handlePreviousPage}
+          disabled={currentPage === 0}
         >
           &lt; Prev
-        </Button>
+        </button>
         <span className="text-gray-700">
-            Violins ordered from smallest to biggest ED ({currentPage + 1}/{Math.ceil(sortedData.length / itemsPerPage)})
+          Violins ordered from smallest to biggest ED ({currentPage + 1}/{Math.ceil(sortedData.length / itemsPerPage)})
         </span>
-        <Button 
-          color="primary" 
-          size='sm'
-          onClick={handleNextPage} 
-          disabled={endIndex >= sortedData.length} 
+        <button
+          className={`px-4 py-2 border border-gray-300 text-gray-700 rounded hover:text-white hover:bg-blue-500 transition`}
+          onClick={handleNextPage}
+          disabled={endIndex >= sortedData.length}
         >
           Next &gt;
-        </Button>
+        </button>
       </div>
+
       <Plot
         data={data}
         layout={layout}
         useResizeHandler={true}
         style={{ width: '100%', height: '100%' }}
+        onHover={handleHover}
       />
     </div>
   );

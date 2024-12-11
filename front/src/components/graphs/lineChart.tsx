@@ -3,12 +3,15 @@ import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
 import { getColorScale } from "@/components/color_scale/colorScale";
 
-const LineChart = ({ plotData }: ChartProps) => {
+interface LineChartProps extends ChartProps {
+  highlightedID: string | null;
+}
+
+const LineChart = ({ plotData, highlightedID }: LineChartProps) => {
   const [selectedVariable, setSelectedVariable] = useState<string>("values");
   const [coloringMethod, setColoringMethod] = useState<string | null>(null);
 
   useEffect(() => {
-    // Retrieve parameters from localStorage
     const savedParameters = localStorage.getItem("savedParameters");
     if (savedParameters) {
       const parsedParameters = JSON.parse(savedParameters);
@@ -17,7 +20,6 @@ const LineChart = ({ plotData }: ChartProps) => {
   }, []);
 
   if (!plotData || plotData.length === 0) {
-    console.log("Aguardando dados...");
     return <div>Loading...</div>;
   }
 
@@ -25,16 +27,22 @@ const LineChart = ({ plotData }: ChartProps) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0]; // Formata para ano-mês-dia
+    return date.toISOString().split("T")[0];
   };
 
-  // Get the color scale configuration
   const colorScaleConfig = getColorScale(coloringMethod as keyof typeof getColorScale);
 
-  // Prepare the traces for the line chart
-  const traces = plotData.map(item => {
+  const opacities = plotData.map(item => {
+    console.log("highlightedID", highlightedID, "item.id", item.id.toString());
+    const isHighlighted = highlightedID?.toString() === item.id.toString();
+    return isHighlighted ? 1 : 0.3;
+  });
+
+  console.log("opacity line chart", opacities);
+
+  const traces = plotData.map((item, index) => {
     const date = new Date(item.date);
-    let color = "#000000"; // Default color
+    let color = "#000000"; 
 
     if (coloringMethod === "Month" && colorScaleConfig) {
       color = colorScaleConfig.colors[date.getMonth()];
@@ -49,10 +57,12 @@ const LineChart = ({ plotData }: ChartProps) => {
       mode: "lines",
       line: {
         shape: "spline",
-        color, // Set the line color
-        width: 2,
+        color: color,
+        opacity: opacities[index],
       },
-      name: formatDate(item.date), // Format the date for display
+      name: formatDate(item.date),
+      hoverinfo: "name+y",
+      text: `ID: ${item.id}`,
     };
   });
 
@@ -62,22 +72,20 @@ const LineChart = ({ plotData }: ChartProps) => {
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-      {}
       <div className="absolute top-2 left-2 z-10 w-fit h-fit">
-      <select
-        id="variable-select"
-        onChange={handleVariableSelection}
-        className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm hover:border-indigo-500 focus:outline-none transition duration-200 ease-in-out p-1"
-      >
-        {variables.map(variable => (
-          <option key={variable} value={variable}>
-            {variable.charAt(0).toUpperCase() + variable.slice(1)} {}
-          </option>
-        ))}
-      </select>
+        <select
+          id="variable-select"
+          onChange={handleVariableSelection}
+          className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm hover:border-indigo-500 focus:outline-none transition duration-200 ease-in-out p-1"
+        >
+          {variables.map((variable) => (
+            <option key={variable} value={variable}>
+              {variable.charAt(0).toUpperCase() + variable.slice(1)}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Line Chart */}
       <Plot
         className="bg-white shadow-md"
         data={traces}
@@ -95,8 +103,8 @@ const LineChart = ({ plotData }: ChartProps) => {
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
         }}
-        useResizeHandler={true} // Enable resizing
-        style={{ width: "100%", height: "100%" }} // Make it responsive
+        useResizeHandler={true}
+        style={{ width: "100%", height: "100%" }}
       />
     </div>
   );

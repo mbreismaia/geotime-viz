@@ -1,36 +1,47 @@
 from fastapi import APIRouter, HTTPException
 import geojson
+import json
 import pandas as pd
 import numpy as np
 from fastapi.responses import JSONResponse
 from typing import List, Dict
+from service.impl.plots_service import PlotService
+from schemas.parameters import Parameters
 
 router = APIRouter() 
 
 @router.post("")
-async def get_map_data(plot_data: List[Dict]):  
+async def get_map_data(plot_data: List[Dict]): 
+    hour_interval = (0, 23)
+    date_interval = ("2012-01-01", "2012-12-31")
+    param = Parameters(hour_interval=hour_interval, date_interval=date_interval)
+
+    PlotService.get_plot_data_zone(param)
+    
     try:
         with open("./db/NYC_Taxi_Zones.geojson") as f:
             geo_data = geojson.load(f)
         
         df_geo = pd.read_csv("./db/taxi_zones.csv")
 
-        zone_extremal_depths = {}
+        zone_ed = {}
+        zone_ed_set = set()
 
-        for i in range(len(plot_data)):
-            zone = plot_data[i]['zone']
-
-            if zone not in zone_extremal_depths:
-                zone_extremal_depths[zone] = []
-
-            extremal_depth = plot_data[i]['extremal_depth']
-            zone_extremal_depths[zone].append(extremal_depth)
-
-        median_extremal_depths = {zone: np.median(extremal_depths) for zone, extremal_depths in zone_extremal_depths.items()}
+        with open('./db/database_zone.json') as json_file:
+            curve_data = json.load(json_file)
+            for curve in curve_data["curves"]:
+                zone = curve["zone"]
+                ed = curve["extremal_depth"]
+                zone_ed[str(zone)] = ed
+                zone_ed_set.add(str(zone))
 
         for feature in geo_data['features']:
-            zone = feature['properties']['zone']
-            feature['properties']['ED'] = median_extremal_depths.get(zone, -1)
+            cur_zone = str(feature['properties']['location_id'])
+            
+            if cur_zone in zone_ed_set:
+                feature['properties']['ED'] = zone_ed[cur_zone]
+            else:
+                feature['properties']['ED'] = 0
         
         return {
             "geojson": geo_data,
