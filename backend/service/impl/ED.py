@@ -78,7 +78,7 @@ def ED(C, query: QueryED):
             else:
                 L = mid + 1
 
-        C[i].extremal_depth = L / N
+        C[i].extremal_depth = (N-L) / N
 
     C = C[::-1]
 

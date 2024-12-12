@@ -34,7 +34,7 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
     return <div>No data available</div>;
   }
 
-  const sortedData = [...plotData].sort((a, b) => b.extremal_depth - a.extremal_depth);
+  const sortedData = [...plotData].sort((a, b) => a.extremal_depth - b.extremal_depth);
 
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
