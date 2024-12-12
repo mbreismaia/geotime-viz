@@ -31,25 +31,25 @@ const Map = ({ plotData }: ChartProps) => {
 
   const savedParameters = localStorage.getItem("savedParameters");
   const parameters = savedParameters ? JSON.parse(savedParameters) : {}; // Use um objeto vazio se não houver parâmetros
-  console.log("PEGOU ESSES PARAMETERS: ",parameters)
+  const [hasDataFetched, setHasDataFetched] = useState(false);
 
   useEffect(() => {
-    console.log("ENTROU NO EFFECT DO MAPA!")
     const fetchData = async () => {
-      try {
-        const response = await axios.post("http://127.0.0.1:8000/map", parameters);
-        console.log("Resposta da requisição:", response.data);
-        
-        setGeoData(response.data.geoData);
-        setZoneData(response.data.data);
-
-      } catch (error) {
-        console.error("Erro ao enviar os parâmetros:", error);
+      if (!hasDataFetched) { // Only fetch data if not already done
+        try {
+          const response = await axios.post("http://127.0.0.1:8000/map", parameters);
+          console.log("Resposta do servidor:", response.data);
+          setGeoData(response.data.geojson); // Update state with fetched data
+          setZoneData(response.data.data);
+          setHasDataFetched(true); // Set flag to indicate data is fetched
+        } catch (error) {
+          console.error("Erro ao enviar os parâmetros:", error);
+        }
       }
     };
 
-    fetchData(); // Chama a função fetchData para executar a requisição.
-  }, [parameters]);
+    fetchData();
+  }, [parameters, hasDataFetched]);
 
 
   const handleSelection = (event: any) => {
@@ -63,23 +63,17 @@ const Map = ({ plotData }: ChartProps) => {
     return <div>Error: {error}</div>;
   }
 
-  if (!geoData || !zoneData) {
-    return <div className="flex w-full h-full items-center justify-center">
-      Please wait a moment while the map is loading...
-    </div>;
-  }
-
   return (
     <Plot
       data={[
         {
           type: "choroplethmapbox",
           geojson: geoData,
-          locations: geoData.features.map(
+          locations: geoData?.features.map(
             (feature) => feature.properties.location_id 
           ),
-          z: geoData.features.map((feature) => feature.properties.ED), 
-          text: geoData.features.map((feature) => feature.properties.zone),
+          z: geoData?.features.map((feature) => feature.properties.ED), 
+          text: geoData?.features.map((feature) => feature.properties.zone),
           featureidkey: "properties.location_id", 
           colorscale: "Viridis", 
           colorbar: { title: "ED", thickness: 15 }, 
