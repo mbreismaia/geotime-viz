@@ -41,14 +41,12 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
     try {
       // console.log("Parâmetros enviados:", parameters);
       localStorage.setItem("savedParameters", JSON.stringify(parameters));
-      
       toast.success("Data is being sent. Please wait... The page will reload automatically.");
+      onClose();
 
       const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
-      
       localStorage.setItem("plotData", JSON.stringify(response.data));
-   
-      onClose();
+
       window.location.reload(); 
 
     } catch (error) {

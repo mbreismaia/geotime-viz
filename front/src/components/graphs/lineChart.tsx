@@ -5,9 +5,10 @@ import { getColorScale } from "@/components/color_scale/colorScale";
 
 interface LineChartProps extends ChartProps {
   highlightedID: string | null;
+  selectedPoints: any[]; 
 }
 
-const LineChart = ({ plotData, highlightedID }: LineChartProps) => {
+const LineChart = ({ plotData, highlightedID, selectedPoints }: LineChartProps) => {
   const [selectedVariable, setSelectedVariable] = useState<string>("values");
   const [coloringMethod, setColoringMethod] = useState<string | null>(null);
 
@@ -33,10 +34,11 @@ const LineChart = ({ plotData, highlightedID }: LineChartProps) => {
   const colorScaleConfig = getColorScale(coloringMethod as keyof typeof getColorScale);
 
   const opacities = plotData.map(item => {
-    // // console.log("highlightedID", highlightedID, "item.id", item.id.toString());
     const isHighlighted = highlightedID?.toString() === item.id.toString();
-    return isHighlighted ? 1 : 0.3;
+    const isSelected = selectedPoints.some(point => point.id === item.id);
+    return isHighlighted || isSelected ? 1 : 0.2; // Ajusta a opacidade com base na seleção ou destaque
   });
+
 
   // // console.log("opacity line chart", opacities);
 
@@ -58,8 +60,8 @@ const LineChart = ({ plotData, highlightedID }: LineChartProps) => {
       line: {
         shape: "spline",
         color: color,
-        opacity: opacities[index],
       },
+      opacity: opacities[index],
       name: formatDate(item.date),
       hoverinfo: "name+y",
       text: `ID: ${item.id}`,
@@ -102,6 +104,9 @@ const LineChart = ({ plotData, highlightedID }: LineChartProps) => {
           autosize: true,
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
+          modebar: {
+            orientation: "v"          
+          }
         }}
         useResizeHandler={true}
         style={{ width: "100%", height: "100%" }}

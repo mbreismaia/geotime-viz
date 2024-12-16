@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ChartProps } from "@/types/types";
 import dynamic from "next/dynamic";
+import Loading from "./loading";
 
 const Map = dynamic(() => import("./graphs/map"), { ssr: false });
 const LineChart = dynamic(() => import("./graphs/lineChart"), { ssr: false });
@@ -34,35 +35,28 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
 
     if (savedPlotData) {
       const parsedData = JSON.parse(savedPlotData);
-      // console.log("Dados parseados do localStorage:", parsedData);
       setPlotData(parsedData.data); 
     } else {
-      // console.log("Nenhum dado encontrado no localStorage.");
+      console.log("Nenhum dado encontrado no localStorage.");
     }
   }, []); 
 
   // Tela de Carregando os dados
   if (!plotData) {
-    return <div className="w-full bg-gray-100 flex items-center justify-center">
-      <div className="flex flex-col text-center items-center gap-y-4">
-        <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
-        <p className="text-lg text-gray-700">Loading data and visualizations...</p>
-      </div>
-    </div>;
+    return <Loading />;
   }
 
-  // Renderizar gráfico com base na seleção
   const renderChart = () => {
     switch (selectedChart) {
       case 'map':
         return <Map plotData={plotData} />;
       case 'line':
         return <div className="w-full h-auto bg-white rounded p-2">
-          <LineChart plotData={plotData}  highlightedID={highlightedID} />
+          <LineChart plotData={plotData} highlightedID={highlightedID} selectedPoints={selectedPoints} />
         </div>;
       case 'parallel':
         return <div className="w-full h-auto bg-white rounded p-2">
-            <ParallelCoordinatesChart plotData={plotData} selectedPoints={selectedPoints}/>
+            <ParallelCoordinatesChart plotData={plotData}/>
           </div>;
       case 'scatter':
         return <div className="w-full h-auto bg-white rounded p-2">
@@ -86,17 +80,16 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
 
           <div className="flex w-full h-96 gap-x-4">
             <div className="w-2/6 bg-white shadow-md rounded">
-              <ParallelCoordinatesChart plotData={plotData} selectedPoints={selectedPoints}/>
+              <ParallelCoordinatesChart plotData={plotData}/>
             </div>
-              <div className="w-2/6 bg-white shadow-md rounded">
-              <LineChart plotData={plotData} highlightedID={highlightedID} />
+            <div className="w-2/6 bg-white shadow-md rounded">
+              <LineChart plotData={plotData} highlightedID={highlightedID} selectedPoints={selectedPoints} />
             </div>
             <div className="w-2/6 bg-white shadow-md rounded">
               <ScatterChart plotData={plotData} onPointsSelected={handlePointsSelected}  />
             </div>
           </div>
           </>
-          
         );
     }
   };

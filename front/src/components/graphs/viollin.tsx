@@ -72,6 +72,9 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
     autosize: true,
     paper_bgcolor: 'transparent',
     plot_bgcolor: 'transparent',
+    modebar:{
+      orientation: 'v'
+    },
     margin: { l: 50, r: 50, b: 70, t: 30 },
     xaxis: {
       title: 'Date',
@@ -79,7 +82,7 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
     },
     yaxis: {
       title: 'Depth_g',
-    },
+    }
   };
 
   const handleNextPage = () => {
@@ -97,23 +100,20 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
   return (
     <div className="flex flex-col relative w-full h-full overflow-hidden">
       <div className="flex justify-between items-center">
-        <button
-          className={`px-4 py-2 border border-gray-300 text-gray-700 rounded hover:text-white hover:bg-blue-500 transition`}
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
-        >
-          &lt; Prev
-        </button>
+        <Button className='border-gray-600' size='sm' variant="bordered" 
+         onPress={handlePreviousPage} 
+         disabled={currentPage === 0}>
+            &lt; Prev
+        </Button>
         <span className="text-gray-700">
           Violins ordered from smallest to biggest ED ({currentPage + 1}/{Math.ceil(sortedData.length / itemsPerPage)})
         </span>
-        <button
-          className={`px-4 py-2 border border-gray-300 text-gray-700 rounded hover:text-white hover:bg-blue-500 transition`}
-          onClick={handleNextPage}
-          disabled={endIndex >= sortedData.length}
-        >
-          Next &gt;
-        </button>
+        <Button 
+         className='border-gray-600' size='sm' variant="bordered" 
+         onPress={handleNextPage} 
+         disabled={endIndex >= sortedData.length}>
+            Next &gt;
+        </Button>
       </div>
 
       <Plot

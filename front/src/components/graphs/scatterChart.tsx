@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getColorScale } from "@/components/color_scale/colorScale";
 
 interface ScatterChartProps extends ChartProps {
-  onPointsSelected: (points: any[]) => void; // Callback para enviar pontos selecionados
+  onPointsSelected: (points: any[]) => void; 
 }
 
 const ScatterChart = ({ plotData, onPointsSelected }: ScatterChartProps) => {
@@ -42,9 +42,7 @@ const ScatterChart = ({ plotData, onPointsSelected }: ScatterChartProps) => {
       setSelectedPoints(newSelectedPoints);
       onPointsSelected(newSelectedPoints); 
       // console.log("Selected points:", newSelectedPoints);
-    } else {
-      // console.log("Selection cleared, maintaining previous points:", selectedPoints);
-    }
+    } 
   };
 
   const opacities = plotData.map(item => {
@@ -92,6 +90,9 @@ const ScatterChart = ({ plotData, onPointsSelected }: ScatterChartProps) => {
     autosize: true,
     paper_bgcolor: "transparent",
     plot_bgcolor: "transparent",
+    modebar: {
+      orientation: "v",        
+    }
   };
 
   return (
