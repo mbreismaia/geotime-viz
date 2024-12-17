@@ -72,9 +72,6 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
     autosize: true,
     paper_bgcolor: 'transparent',
     plot_bgcolor: 'transparent',
-    modebar:{
-      orientation: 'v'
-    },
     margin: { l: 50, r: 50, b: 70, t: 30 },
     xaxis: {
       title: 'Date',
@@ -122,6 +119,9 @@ const ViolinPlot = ({ plotData, selectedPoints, onHover }: ViolinPlotProps) => {
         useResizeHandler={true}
         style={{ width: '100%', height: '100%' }}
         onHover={handleHover}
+        config={{
+          displayModeBar: false 
+        }}
       />
     </div>
   );

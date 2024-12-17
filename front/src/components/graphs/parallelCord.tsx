@@ -1,65 +1,73 @@
-import { ChartProps } from '@/types/types';
 import React, { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
-import { getColorScale } from "@/components/color_scale/colorScale";
-import { coloring_method } from '../modal/modal';
+import { ChartProps } from '@/types/types';
+import { getColorScale } from '../color_scale/colorScale';
 
-interface ParallelPlotProps extends ChartProps {
-  selectedPoints: any[]; 
-}
-
-const ParallelCoordinatesChart = ({ plotData, selectedPoints }: ParallelPlotProps) => {
-  const [coloringMethod, setColoringMethod] = useState<string | null>(null);
+const ParallelCoordinatesChart = ({ plotData }: ChartProps) => {
+  const [method, setMethod] = useState<'Month' | 'Weekday' | null>(null);
 
   useEffect(() => {
-    const savedParameters = localStorage.getItem("savedParameters");
+    const savedParameters = localStorage.getItem('savedParameters');
     if (savedParameters) {
-      const parsedParameters = JSON.parse(savedParameters);
-      setColoringMethod(parsedParameters.coloring_method || null);
+      const parameters = JSON.parse(savedParameters);
+      setMethod(parameters.coloring_method);
+      // console.log('coloringMethod:', parameters.coloring_method);
     }
   }, []);
 
-  if (!plotData || plotData.length === 0) {
-    return <div>No data available</div>;
-  }
+  if (!plotData || method === null) return null;
 
-  const variables = plotData[0]?.variables || [];
-  const ids = plotData.map(item => item.id);
-  const colorScaleConfig = getColorScale(coloringMethod as keyof typeof getColorScale);
+  const values = plotData.map((item) => item.ED_parallel.values);
+  const prices = plotData.map((item) => item.ED_parallel.prices);
+  const distances = plotData.map((item) => item.ED_parallel.distances);
+  const totalTime = plotData.map((item) => item.ED_parallel.total_time);
+  const ids = plotData.map((item) => item.id);
 
-  if (!colorScaleConfig) {
-    return <div>Error: Invalid color scale configuration</div>;
-  }
+  const colorScale = getColorScale(method);
+  // console.log('Color Scale:', colorScale);
 
-  const colorValues = plotData.map((_, index) => index); 
-  const colorscale = colorScaleConfig.colors.map((color, idx) => [
-    idx / (colorScaleConfig.colors.length - 1),
-    color,
-  ]);
-
-  const visibility = plotData.map(item => {
-    const isSelected = selectedPoints.some(point => {
-      return point.id.toString() === item.id.toString();
-    });
-    return isSelected || selectedPoints.length === 0 ? true : false;
+  const colors = plotData.map((item) => {
+    const date = new Date(item.date);
+    const colorIndex = method === 'Month' ? date.getMonth() : date.getDay();
+    return colorIndex;
   });
 
-  // console.log('visibility parallel: ', visibility);
+  const uniqueColors = Array.from(new Set(colors));
+  const mappedColors = colors.map((colorIndex) => {
+    return colorScale.colors[colorIndex];
+  });
 
   const data = [
     {
       type: 'parcoords',
       line: {
-        color: colorValues,
-        colorscale: colorscale, 
-        showscale: false,
+        color: colors, 
+        colorscale: method === 'Month'
+          ? [[0, colorScale.colors[uniqueColors[0]]], [1, colorScale.colors[uniqueColors[0]]]] 
+          : colorScale.colors.map((color, i) => [i / (colorScale.colors.length - 1), color]),
+        showscale: true,
+        colorbar: {
+          tickvals: method === 'Month' ? [0] : colorScale.colors.map((_, i) => i),
+          ticktext: method === 'Month' ? [colorScale.labels[uniqueColors[0]]] : colorScale.labels,
+        },
       },
-      visible: visibility,
       dimensions: [
-        ...variables.map(variable => ({
-          label: variable,
-          values: plotData.map(item => item.ED_parallel[variable.toLowerCase() as keyof typeof item.ED_parallel]),
-        })),
+        {
+          label: 'Values',
+          values: values,
+        },
+        {
+          label: 'Prices',
+          values: prices,
+        },
+        {
+          label: 'Distances',
+          values: distances,
+        },
+        {
+          label: 'Total Time',
+          values: totalTime,
+        },
         {
           label: 'ID',
           values: ids,
@@ -69,10 +77,8 @@ const ParallelCoordinatesChart = ({ plotData, selectedPoints }: ParallelPlotProp
   ];
 
   const layout = {
+    margin: { l: 50, r: 50, t: 50, b: 50 },
     autosize: true,
-    paper_bgcolor: 'transparent',
-    plot_bgcolor: 'transparent',
-    margin: { l: 40, r: 40, b: 40, t: 50 },
   };
 
   return (
