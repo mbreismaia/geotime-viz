@@ -1,4 +1,3 @@
-// colorScales.ts
 type ColorScaleKey = 'Month' | 'Weekday';
 
 const discreteColorScales: Record<ColorScaleKey, { colors: string[], labels: string[] }> = {
@@ -14,8 +13,6 @@ const discreteColorScales: Record<ColorScaleKey, { colors: string[], labels: str
       colors: ['#636efa', '#ef553b', '#00cc96', '#ab63fa', '#ffa15a', '#19d3f3', '#8c564b'],
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     },
-
-    // adicionar o quarter
 };
 
 export const getColorScale = (method: ColorScaleKey) => discreteColorScales[method] || null;
