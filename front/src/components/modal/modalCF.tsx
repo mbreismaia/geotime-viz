@@ -62,6 +62,7 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
           <DateRangePicker
             label="Select a Date Range"
             className="w-full"
+            disableAnimation
             value={
               parameters.date_interval
                 ? {
