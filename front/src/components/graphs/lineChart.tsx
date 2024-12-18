@@ -36,11 +36,9 @@ const LineChart = ({ plotData, highlightedID, selectedPoints }: LineChartProps) 
   const opacities = plotData.map(item => {
     const isHighlighted = highlightedID?.toString() === item.id.toString();
     const isSelected = selectedPoints.some(point => point.id === item.id);
-    return isHighlighted || isSelected ? 1 : 0.2; // Ajusta a opacidade com base na seleção ou destaque
+    return isHighlighted || isSelected ? 1 : 0.1; 
   });
 
-
-  // // console.log("opacity line chart", opacities);
 
   const traces = plotData.map((item, index) => {
     const date = new Date(item.date);

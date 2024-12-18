@@ -1,16 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { ChartProps } from '@/types/types';
-import { getColorScale } from '../color_scale/colorScale';
 
-const ParallelCoordinatesChart = ({ plotData }: ChartProps) => {
+const colors: Record<string, string[]> = {
+  Month: [
+    '#2e91e5', '#e15f99', '#1ca71c', '#fb0d0d', 
+    '#da16ff', '#222a2a', '#b68100', '#750d86', 
+    '#eb663b', '#511cfb', '#00a08b', '#fb00d1'
+  ],
+  Weekday: [
+    '#636efa', '#ef553b', '#00cc96', '#ab63fa', 
+    '#ffa15a', '#19d3f3', '#8c564b'
+  ],
+};
+
+const getColorScale = (method: 'Month' | 'Weekday') => {
+  return {
+    colors: colors[method] || [],
+    labels: method === 'Month' 
+      ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  };
+};
+
+const ParallelCoordinatesChart: React.FC<ChartProps> = ({ plotData }) => {
   const [method, setMethod] = useState<'Month' | 'Weekday' | null>(null);
   
   useEffect(() => {
     const savedParameters = localStorage.getItem('savedParameters');
     if (savedParameters) {
       const parameters = JSON.parse(savedParameters);
-      setMethod(parameters.coloring_method); // Carregar o método de coloração
+      setMethod(parameters.coloring_method);
     }
   }, []);
 
@@ -22,54 +42,34 @@ const ParallelCoordinatesChart = ({ plotData }: ChartProps) => {
   const totalTime = plotData.map((item) => item.ED_parallel.total_time);
   const ids = plotData.map((item) => item.id);
 
-  const colorScale = getColorScale(method); // Obter a escala de cores
+  const colorScale = getColorScale(method); 
 
-  // Mapear cores com base no método
-  const colors = plotData.map((item) => {
+  const colorIndices = plotData.map((item) => {
     const date = new Date(item.date);
-    const month = date.getMonth(); // Mês (0 a 11)
-    const day = date.getDay(); // Dia da semana (0 = Domingo, 6 = Sábado)
-
-    if (method === 'Month') {
-      return month; // Usar o mês como índice de cor
-    } else if (method === 'Weekday') {
-      return day; // Usar o dia da semana como índice de cor
-    }
-    return -1; // Caso padrão
+    return method === 'Month' ? date.getMonth() : date.getDay(); 
   });
 
-  // Mapear cores de acordo com o método
-  const mappedColors = colors.map((colorIndex) => {
-    if (method === 'Month' && colorIndex >= 0) {
-      return colorScale.colors[colorIndex]; // Cor do mês
-    } else if (method === 'Weekday' && colorIndex >= 0) {
-      return colorScale.colors[colorIndex]; // Cor do dia da semana
-    }
-    return '#ddd'; // Cor padrão
-  });
+  const uniqueMonths = Array.from(new Set(colorIndices.filter(index => index >= 0))); 
+
+  const filteredColors = uniqueMonths.map(monthIndex => colorScale.colors[monthIndex]);
+  const filteredLabels = uniqueMonths.map(monthIndex => colorScale.labels[monthIndex]);
+
+  const mappedColors = colorIndices.map((colorIndex) =>
+    colorIndex >= 0 ? filteredColors[uniqueMonths.indexOf(colorIndex)] : '#ddd'
+  );
+
+  const colorScaleData = filteredColors.map((color, i) => [i / (filteredColors.length - 1), color]);
 
   const data = [
     {
       type: 'parcoords',
       line: {
-        color: colors,
-        colorscale: method === 'Month'
-          ? colorScale.colors.map((color, i) => [i / (colorScale.colors.length - 1), color])
-          : method === 'Weekday'
-          ? colorScale.colors.map((color, i) => [i / (colorScale.colors.length - 1), color])
-          : [],
+        color: colorIndices,
+        colorscale: colorScaleData,
         showscale: true,
         colorbar: {
-          tickvals: method === 'Month' 
-            ? Array.from({ length: colorScale.colors.length }, (_, i) => i) 
-            : method === 'Weekday' 
-            ? Array.from({ length: colorScale.colors.length }, (_, i) => i) 
-            : [],
-          ticktext: method === 'Month' 
-            ? colorScale.labels 
-            : method === 'Weekday' 
-            ? colorScale.labels 
-            : [],
+          tickvals: Array.from({ length: filteredColors.length }, (_, i) => i),
+          ticktext: filteredLabels,
         },
       },
       dimensions: [
