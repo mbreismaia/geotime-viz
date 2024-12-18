@@ -69,7 +69,7 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
       default:
         return (
           <>
-          <div className="flex w-full h-72 gap-x-4">
+          <div className="flex w-full h-1/2 gap-x-4">
             <div className="w-1/2 overflow-hidden shadow-md rounded bg-white">
               < Map plotData={plotData} />
             </div>
@@ -78,7 +78,7 @@ export default function Dashboard({ selectedChart }: DashboardProps) {
             </div>
           </div>
 
-          <div className="flex w-full h-96 gap-x-4">
+          <div className="flex w-full h-1/2 gap-x-4  overflow-hidden">
             <div className="w-2/6 bg-white shadow-md rounded">
               <ParallelCoordinatesChart plotData={plotData}/>
             </div>

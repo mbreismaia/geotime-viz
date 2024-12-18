@@ -1,7 +1,6 @@
 import { ChartProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
-import { defaultParameters } from "../modal/modal";
 import axios from "axios";
 
 
@@ -30,18 +29,18 @@ const Map = ({ plotData }: ChartProps) => {
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
 
   const savedParameters = localStorage.getItem("savedParameters");
-  const parameters = savedParameters ? JSON.parse(savedParameters) : {}; // Use um objeto vazio se não houver parâmetros
+  const parameters = savedParameters ? JSON.parse(savedParameters) : {}; 
   const [hasDataFetched, setHasDataFetched] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!hasDataFetched) { // Only fetch data if not already done
+      if (!hasDataFetched) { 
         try {
           const response = await axios.post("http://127.0.0.1:8000/map", parameters);
           console.log("Resposta do servidor:", response.data);
-          setGeoData(response.data.geojson); // Update state with fetched data
+          setGeoData(response.data.geojson); 
           setZoneData(response.data.data);
-          setHasDataFetched(true); // Set flag to indicate data is fetched
+          setHasDataFetched(true); 
         } catch (error) {
           console.error("Erro ao enviar os parâmetros:", error);
         }
@@ -54,7 +53,6 @@ const Map = ({ plotData }: ChartProps) => {
 
   const handleSelection = (event: any) => {
     const selectedZonas = event.points.map((point: any) => point.properties.location_id);
-    // console.log("Zonas selecionadas:", selectedZonas);
     localStorage.setItem("selectedZones", JSON.stringify(selectedZonas));
     setSelectedZones(selectedZonas);
   };
@@ -82,13 +80,13 @@ const Map = ({ plotData }: ChartProps) => {
       layout={{
         mapbox: {
           style: "carto-positron",
-          center: { lon: -73.9845, lat: 40.695 }, // NYC center
+          center: { lon: -73.9845, lat: 40.695 }, 
           zoom: 9,
         },
         autosize: true,
         margin: { l: 0, r: 0, t: 0, b: 0 },
-        width: "100%",
-        height: "100%",
+        width: 600,
+        height: 500,
       }}
       config={{
         responsive: true,

@@ -23,7 +23,7 @@ const getColorScale = (method: 'Month' | 'Weekday') => {
   };
 };
 
-const ParallelCoordinatesChart: React.FC<ChartProps> = ({ plotData }) => {
+const ParallelCoordinatesChart = ({ plotData } : ChartProps) => {
   const [method, setMethod] = useState<'Month' | 'Weekday' | null>(null);
   
   useEffect(() => {
@@ -88,7 +88,7 @@ const ParallelCoordinatesChart: React.FC<ChartProps> = ({ plotData }) => {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       <Plot
         data={data}
         layout={layout}
