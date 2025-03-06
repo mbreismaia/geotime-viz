@@ -35,11 +35,11 @@ The frontend is built using Next.js and TypeScript, so you need to have Node.js 
 
 3. **Install dependencies**:
    ```bash
-    pip install -r requirements.txt`
+    pip install -r requirements.txt
 
 4. **Run the FastAPI server:**:
    ```bash
-    uvicorn main:app --reload`
+    uvicorn main:app --reload
    
 This will start the backend server, and it will be available at http://127.0.0.1:8000.
 
@@ -51,7 +51,7 @@ This will start the backend server, and it will be available at http://127.0.0.1
    ```bash
    cd frontend
    npm install
-   npm run dev`
+   npm run dev
 
 This will start the frontend development server, and it will be available at http://localhost:3000.
 
