@@ -28,9 +28,9 @@ The frontend is built using Next.js and TypeScript, so you need to have Node.js 
    git clone <repository-url>
    cd backend
 
-2. **Set up a virtual environment (optional but recommended)**:
+2. **Set up a virtual environment with Python 3.12 (recommended)**:
    ```bash
-   python -m venv venv
+   python3.12 -m venv venv 
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
 3. **Install dependencies**:
