@@ -18,7 +18,7 @@ class Curve:
         self.id = int(id)
         self.zone = int(0)
         self.weekDay = int(0)
-        self.date = datetime.datetime(2012, 1, 1)
+        self.date = datetime.datetime(2020, 1, 1)
 
         #for values
         self.phi = size_r * [0.0]                                        #por enquanto, 4 eh o padrao

@@ -12,7 +12,7 @@ from schemas.parameters import Parameters
 class PlotService:
     @staticmethod
     def getDate(num):
-        year = 2012
+        year = 2020
         dt = date(year, 1, 1) + timedelta(num - 1)
         day = dt.weekday()
         month = dt.month
@@ -21,7 +21,7 @@ class PlotService:
     @staticmethod
     def read_data_initial_zone(parameters: Parameters):
         print("Reading data zone")
-        curves = pd.read_csv('./db/curvesWithLocationOrigin.csv')
+        curves = pd.read_csv('./db/curves2020.csv')
 
         N = 366
         P = 24
@@ -43,7 +43,7 @@ class PlotService:
             id, zone = curves.at[i, 'id'], curves.at[i, 'zone']
             for var in variables:
                 val = np.array(list(map(float, curves.at[i, var][1:-1].split(', '))))
-                matrixes[var][id][zone] = val
+                matrixes[var][id][zone] = abs(val)
 
         for i in range(Z):
             for j in range(N):
@@ -118,7 +118,7 @@ class PlotService:
     @staticmethod
     def read_data_initial():
         print("Reading data")
-        curves = pd.read_csv('./db/curvesWithLocationOrigin.csv')
+        curves = pd.read_csv('./db/curves2020.csv')
 
         N = 366
         P = 24

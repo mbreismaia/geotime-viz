@@ -49,8 +49,9 @@ const ParallelCoordinatesChart = ({ plotData } : ChartProps) => {
     return method === 'Month' ? date.getMonth() : date.getDay(); 
   });
 
-  const uniqueMonths = Array.from(new Set(colorIndices.filter(index => index >= 0))); 
-
+  const uniqueMonths = Array.from(new Set(colorIndices.filter(index => index >= 0)))
+  .sort((a, b) => a - b);
+  
   const filteredColors = uniqueMonths.map(monthIndex => colorScale.colors[monthIndex]);
   const filteredLabels = uniqueMonths.map(monthIndex => colorScale.labels[monthIndex]);
 
