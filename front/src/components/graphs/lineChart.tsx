@@ -2,6 +2,7 @@ import { ChartProps } from "@/types/types";
 import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
 import { getColorScale } from "@/components/color_scale/colorScale";
+import { useParameters } from "@/components/context/ParametersContext";
 
 interface LineChartProps extends ChartProps {
   highlightedID: string | null;
@@ -10,15 +11,8 @@ interface LineChartProps extends ChartProps {
 
 const LineChart = ({ plotData, highlightedID, selectedPoints }: LineChartProps) => {
   const [selectedVariable, setSelectedVariable] = useState<string>("values");
-  const [coloringMethod, setColoringMethod] = useState<string | null>(null);
-
-  useEffect(() => {
-    const savedParameters = localStorage.getItem("savedParameters");
-    if (savedParameters) {
-      const parsedParameters = JSON.parse(savedParameters);
-      setColoringMethod(parsedParameters.coloring_method || null);
-    }
-  }, []);
+  const { parameters } = useParameters();
+  const coloringMethod = parameters.coloring_method;
 
   if (!plotData || plotData.length === 0) {
     return <div>Loading...</div>;
@@ -100,8 +94,6 @@ const LineChart = ({ plotData, highlightedID, selectedPoints }: LineChartProps) 
           },
           showlegend: true,
           autosize: true,
-          paper_bgcolor: "transparent",
-          plot_bgcolor: "transparent",
           modebar: {
             orientation: "v"          
           }

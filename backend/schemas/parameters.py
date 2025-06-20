@@ -4,7 +4,8 @@ class Parameters(BaseModel):
     plot: str = "line"
     runED: bool = True
     zones: list[str] = []
-    variables: list[str] = ["values", "prices", "distances", "total_time"]
+    resolution: int = 24
+    variables: list[str] = []
     hour_interval: tuple[int, int]
     date_interval: tuple[str, str]
     coloring_method: str = "Month"

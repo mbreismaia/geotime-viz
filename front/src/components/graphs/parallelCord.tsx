@@ -23,7 +23,7 @@ const getColorScale = (method: 'Month' | 'Weekday') => {
   };
 };
 
-const ParallelCoordinatesChart = ({ plotData } : ChartProps) => {
+const ParallelCoordinatesChart = ({ plotData }: ChartProps) => {
   const [method, setMethod] = useState<'Month' | 'Weekday' | null>(null);
   
   useEffect(() => {
@@ -36,10 +36,7 @@ const ParallelCoordinatesChart = ({ plotData } : ChartProps) => {
 
   if (!plotData || method === null) return null;
 
-  const values = plotData.map((item) => item.ED_parallel.values);
-  const prices = plotData.map((item) => item.ED_parallel.prices);
-  const distances = plotData.map((item) => item.ED_parallel.distances);
-  const totalTime = plotData.map((item) => item.ED_parallel.total_time);
+  const variables = Object.keys(plotData[0].ED_parallel); // dynamically extract variables
   const ids = plotData.map((item) => item.id);
 
   const colorScale = getColorScale(method); 
@@ -49,17 +46,30 @@ const ParallelCoordinatesChart = ({ plotData } : ChartProps) => {
     return method === 'Month' ? date.getMonth() : date.getDay(); 
   });
 
-  const uniqueMonths = Array.from(new Set(colorIndices.filter(index => index >= 0)))
-  .sort((a, b) => a - b);
+  const uniqueIndices = Array.from(new Set(colorIndices.filter(index => index >= 0)))
+    .sort((a, b) => a - b);
   
-  const filteredColors = uniqueMonths.map(monthIndex => colorScale.colors[monthIndex]);
-  const filteredLabels = uniqueMonths.map(monthIndex => colorScale.labels[monthIndex]);
+  const filteredColors = uniqueIndices.map(index => colorScale.colors[index]);
+  const filteredLabels = uniqueIndices.map(index => colorScale.labels[index]);
 
   const mappedColors = colorIndices.map((colorIndex) =>
-    colorIndex >= 0 ? filteredColors[uniqueMonths.indexOf(colorIndex)] : '#ddd'
+    colorIndex >= 0 ? filteredColors[uniqueIndices.indexOf(colorIndex)] : '#ddd'
   );
 
-  const colorScaleData = filteredColors.map((color, i) => [i / (filteredColors.length - 1), color]);
+  const colorScaleData = filteredColors.map((color, i) => [
+    i / Math.max(1, (filteredColors.length - 1)),
+    color,
+  ]);
+
+  const dimensions = variables.map((variable) => ({
+    label: variable,
+    values: plotData.map((item) => item.ED_parallel[variable]),
+  }));
+
+  dimensions.push({
+    label: 'ID',
+    values: ids,
+  });
 
   const data = [
     {
@@ -69,17 +79,11 @@ const ParallelCoordinatesChart = ({ plotData } : ChartProps) => {
         colorscale: colorScaleData,
         showscale: true,
         colorbar: {
-          tickvals: Array.from({ length: filteredColors.length }, (_, i) => i),
+          tickvals: uniqueIndices.map((_, i) => i),
           ticktext: filteredLabels,
         },
       },
-      dimensions: [
-        { label: 'Values', values: values },
-        { label: 'Prices', values: prices },
-        { label: 'Distances', values: distances },
-        { label: 'Total Time', values: totalTime },
-        { label: 'ID', values: ids },
-      ],
+      dimensions,
     },
   ];
 

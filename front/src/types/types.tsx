@@ -1,40 +1,21 @@
 export interface ChartProps {
   plotData: {
     variables: string[];
-    data: {
-      values: number[];
-      prices: number[];
-      distances: number[];
-      total_time: number[];
-    };
     id: number;
     zone: number;
+    zone_name: string;
     P: number;
     date: string;
     weekDay: number;
     depth_g: number[];
-    ED_parallel: {
-      values: number;
-      prices: number;
-      distances: number;
-      total_time: number;
-    };
     x: number;
     y: number;
     extremal_depth: number;
     phi: number[];
-    phi_parallel: {
-      values: number[];
-      prices: number[];
-      distances: number[];
-      total_time: number[];
-    };
-    depth_g_parallel: {
-      values: number[];
-      prices: number[];
-      distances: number[];
-      total_time: number[];
-    };
+    data: Record<string, number[]>;
+    ED_parallel: Record<string, number>;
+    phi_parallel: Record<string, number[]>;
+    depth_g_parallel: Record<string, number[]>;
 
   }[] | null;
 }

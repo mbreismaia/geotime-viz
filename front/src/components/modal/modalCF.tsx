@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { defaultParameters, coloring_method, dim_reduction_technique, reference_point, weekDay, depth_type } from "./modal";
 import { parseDate } from "@internationalized/date";
 import { toast } from "react-toastify";
+import { useParameters } from "@/components/context/ParametersContext";
 
 interface ModalCfProps {
   isOpen: boolean;
@@ -24,12 +25,36 @@ interface ModalCfProps {
 }
 
 export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
-  const [parameters, setParameters] = useState(defaultParameters);
-  const formatDate = (date: string): CalendarDate => parseDate(date);
+  const { parameters, setParameters } = useParameters();
+  const formatDate = (date: string | undefined): CalendarDate | undefined => {
+    if (!date) return undefined;
+    return parseDate(date.split("T")[0]);
+  };
+  const [dateIntervalDB, setDateIntervalDB] = useState<{ min_date: string, max_date: string } | null>(null);
 
-  // Carregar parâmetros do localStorage ao abrir o modal
+
+  // Carregar parâmetros ao abrir o modal
   useEffect(() => {
+    const fetchDateInterval = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/api/date-interval");
+        setDateIntervalDB(res.data);
+
+        // Se parâmetros ainda não têm intervalo de data, setar valor inicial
+        if (!parameters.date_interval && res.data.min_date && res.data.max_date) {
+          setParameters((prev) => ({
+            ...prev,
+            date_interval: [res.data.min_date, res.data.max_date],
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch date interval from backend:", error);
+      }
+    };
+
     if (isOpen) {
+      fetchDateInterval();
+
       const savedParameters = localStorage.getItem("savedParameters");
       if (savedParameters) {
         setParameters(JSON.parse(savedParameters));
@@ -39,14 +64,19 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
 
   const handleSave = async () => {
     try {
-      // console.log("Parâmetros enviados:", parameters);
       localStorage.setItem("savedParameters", JSON.stringify(parameters));
       toast.success("Data is being sent. Please wait... The page will reload automatically.");
       onClose();
 
-      const response = await axios.post("http://127.0.0.1:8000/api/line_plot", parameters);
-      localStorage.setItem("plotData", JSON.stringify(response.data));
+      console.log("Parameters being sent:", parameters);
+      const response = await axios.post("http://127.0.0.1:8000/api/compute_ed", parameters);
 
+      if (response.status === 200) {
+        toast.success("Computation was done successfully!");
+      } else {
+        toast.error("Failed to compute ED.");
+      }
+    
       window.location.reload(); 
 
     } catch (error) {
@@ -63,6 +93,8 @@ export default function ModalCf({ isOpen, onClose }: ModalCfProps) {
             label="Select a Date Range"
             className="w-full"
             disableAnimation
+            minValue={dateIntervalDB ? formatDate(dateIntervalDB.min_date) : undefined}
+            maxValue={dateIntervalDB ? formatDate(dateIntervalDB.max_date) : undefined}
             value={
               parameters.date_interval
                 ? {

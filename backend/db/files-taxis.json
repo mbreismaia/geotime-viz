@@ -1,0 +1,12 @@
+{
+    "filenames": ["./db/taxis/yellow_tripdata_2012-01.parquet",
+                  "./db/taxis/yellow_tripdata_2012-02.parquet"],
+    "geo_file": "./db/taxis/NYC_Taxi_Zones.geojson",
+    "geo_map_file": "./db/us-airports/us-map.geojson",
+    "geo_type": "Region",
+    "zone_variable": "PULocationID",
+    "time_variable": "tpep_pickup_datetime",
+    "time_resolution_variable": "CRSDepTime",
+    "variables": ["trip_distance", "fare_amount"],
+    "resolution": 24
+}

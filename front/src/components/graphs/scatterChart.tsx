@@ -2,24 +2,18 @@ import { ChartProps } from "@/types/types";
 import Plot from "react-plotly.js";
 import { useEffect, useState } from "react";
 import { getColorScale } from "@/components/color_scale/colorScale";
+import { useParameters } from "@/components/context/ParametersContext";
+
 
 interface ScatterChartProps extends ChartProps {
   onPointsSelected: (points: any[]) => void; 
 }
 
 const ScatterChart = ({ plotData, onPointsSelected }: ScatterChartProps) => {
-  const [coloringMethod, setColoringMethod] = useState<string | null>(null);
-  const [reductionTechnique, setReductionTechnique] = useState<string | null>(null);
+  const { parameters } = useParameters();
+  const coloringMethod = parameters.coloring_method;
+  const reductionTechnique = parameters.dim_reduction_technique;
   const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
-
-  useEffect(() => {
-    const savedParameters = localStorage.getItem("savedParameters");
-    if (savedParameters) {
-      const parsedParameters = JSON.parse(savedParameters);
-      setColoringMethod(parsedParameters.coloring_method || null);
-      setReductionTechnique(parsedParameters.dim_reduction_technique || null);
-    }
-  }, []);
 
   if (!plotData || plotData.length === 0) {
     return <div>No data available</div>;
@@ -88,8 +82,6 @@ const ScatterChart = ({ plotData, onPointsSelected }: ScatterChartProps) => {
     },
     margin: { l: 50, r: 50, b: 50, t: 50 },
     autosize: true,
-    paper_bgcolor: "transparent",
-    plot_bgcolor: "transparent",
     modebar: {
       orientation: "v",        
     }
